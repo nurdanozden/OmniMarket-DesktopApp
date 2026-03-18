@@ -1,0 +1,28 @@
+# .NET Build Çıktıları
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+
+# Visual Studio / VS Code Özel Dosyaları
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet Paketleri
+*.nupkg
+packages/
+
+# İşletim Sistemi Dosyaları
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- KRİTİK: Güvenlik ---
+# Veritabanı şifrelerini içeren ayar dosyaları
+appsettings.json
+*.env
+*.usersecrets
