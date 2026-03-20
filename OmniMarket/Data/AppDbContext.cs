@@ -7,6 +7,7 @@ public class AppDbContext : DbContext
 {
     public DbSet<Market> Markets { get; set; } = null!;
     public DbSet<Product> Products { get; set; } = null!;
+    public DbSet<Log> Logs { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -23,6 +24,13 @@ public class AppDbContext : DbContext
             .HasOne(p => p.Market)
             .WithMany(m => m.Products)
             .HasForeignKey(p => p.MarketId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Market → Logs (1:N)
+        modelBuilder.Entity<Log>()
+            .HasOne(l => l.Market)
+            .WithMany()
+            .HasForeignKey(l => l.MarketId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Unique username constraint

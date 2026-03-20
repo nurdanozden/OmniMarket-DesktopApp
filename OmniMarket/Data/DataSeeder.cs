@@ -8,10 +8,10 @@ public static class DataSeeder
 
     public static void Seed(AppDbContext context)
     {
-        if (context.Markets.Any()) return;
-
-        // ─── Marketler ───
-        var nurMarket = new Market
+        if (!context.Markets.Any())
+        {
+            // ─── Marketler ───
+            var nurMarket = new Market
         {
             Name = "NUR MARKET",
             Username = "nur",
@@ -32,10 +32,34 @@ public static class DataSeeder
         // ─── Ürünler ───
         var productTemplates = GetProductTemplates();
 
-        GenerateProducts(context, nurMarket.Id, productTemplates, 35);
-        GenerateProducts(context, demoMarket.Id, productTemplates, 32);
+            GenerateProducts(context, nurMarket.Id, productTemplates, 35);
+            GenerateProducts(context, demoMarket.Id, productTemplates, 32);
 
-        context.SaveChanges();
+            context.SaveChanges();
+        }
+
+        // ─── Loglar ───
+        if (context.Logs.Count() < 10)
+        {
+            var adminMarket = context.Markets.FirstOrDefault(m => m.Username == "nur");
+            if (adminMarket != null)
+            {
+                var now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
+                var logs = new List<Log>
+                {
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme, Detay = "Sistem güncellemeleri yapıldı.", Tarih = now.AddDays(-2) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Login, Detay = "Sisteme ilk yetkili girişi sağlandı.", Tarih = now.AddMinutes(-120) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme, Detay = "'1kg Tam Buğday Unu' adlı yeni ürün stoğa eklendi (Stok: 50).", Tarih = now.AddMinutes(-115) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme, Detay = "'1L Günlük Süt' adlı yeni ürün stoğa eklendi (Stok: 120).", Tarih = now.AddMinutes(-110) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Guncelleme, Detay = "'1kg Tam Buğday Unu' ürünü güncellendi (Eski Stok: 50 -> Yeni Stok: 40).", Tarih = now.AddMinutes(-85) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Silme, Detay = "'Hatalı Ürün Kaydı' adlı ürün sistemden tamamen silindi.", Tarih = now.AddMinutes(-30) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Guncelleme, Detay = "Toplu stok güncellemesi yapıldı.", Tarih = now.AddMinutes(-15) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Login, Detay = "Sisteme giriş yapıldı (Oturum Açıldı).", Tarih = now.AddMinutes(-2) }
+                };
+                context.Logs.AddRange(logs);
+                context.SaveChanges();
+            }
+        }
     }
 
     private static void GenerateProducts(AppDbContext context, int marketId,

@@ -1,7 +1,4 @@
 using System.Collections.ObjectModel;
-using OxyPlot;
-using OxyPlot.Axes;
-using OxyPlot.Series;
 using OmniMarket.Helpers;
 using OmniMarket.Models;
 using OmniMarket.Services;
@@ -19,8 +16,8 @@ public class DashboardViewModel : BaseViewModel
     private decimal _totalStockValue;
     private ObservableCollection<AlertItem> _alerts = new();
 
-    private PlotModel _expiredChartModel = new();
-    private PlotModel _mostSoldChartModel = new();
+    private ObservableCollection<TopProductItem> _topExpiredProducts = new();
+    private ObservableCollection<TopProductItem> _topSoldProducts = new();
 
     public int TotalProducts
     {
@@ -52,22 +49,36 @@ public class DashboardViewModel : BaseViewModel
         set => SetProperty(ref _alerts, value);
     }
 
-    public PlotModel ExpiredChartModel
+    public ObservableCollection<TopProductItem> TopExpiredProducts
     {
-        get => _expiredChartModel;
-        set => SetProperty(ref _expiredChartModel, value);
+        get => _topExpiredProducts;
+        set => SetProperty(ref _topExpiredProducts, value);
     }
 
-    public PlotModel MostSoldChartModel
+    public ObservableCollection<TopProductItem> TopSoldProducts
     {
-        get => _mostSoldChartModel;
-        set => SetProperty(ref _mostSoldChartModel, value);
+        get => _topSoldProducts;
+        set => SetProperty(ref _topSoldProducts, value);
     }
 
+    // ─── Navigation Commands (Kart tıklamaları) ─────────────────────────
+    public RelayCommand NavigateToAllProductsCommand { get; }
+    public RelayCommand NavigateToExpiringCommand { get; }
+    public RelayCommand NavigateToExpiredCommand { get; }
+    public RelayCommand NavigateToStockValueCommand { get; }
     public RelayCommand RefreshCommand { get; }
+
+    /// <summary>
+    /// MainViewModel bu event'e subscribe olur — parametre filtre tipidir.
+    /// </summary>
+    public event Action<string>? NavigateRequested;
 
     public DashboardViewModel()
     {
+        NavigateToAllProductsCommand = new RelayCommand(() => NavigateRequested?.Invoke("all"));
+        NavigateToExpiringCommand = new RelayCommand(() => NavigateRequested?.Invoke("expiring"));
+        NavigateToExpiredCommand = new RelayCommand(() => NavigateRequested?.Invoke("expired"));
+        NavigateToStockValueCommand = new RelayCommand(() => NavigateRequested?.Invoke("stockvalue"));
         RefreshCommand = new RelayCommand(LoadData);
     }
 
@@ -91,112 +102,74 @@ public class DashboardViewModel : BaseViewModel
         Alerts = new ObservableCollection<AlertItem>(
             alertList.Select(a => new AlertItem { Message = a.Message, Type = a.Type }));
 
-        // Charts
-        LoadExpiredChart();
-        LoadMostSoldChart();
+        // Top Lists (OxyPlot grafikleri yerine kullanılıyor)
+        LoadTopExpiredProducts();
+        LoadTopSoldProducts();
     }
 
-    private void LoadExpiredChart()
+    private void LoadTopExpiredProducts()
     {
-        var model = new PlotModel
-        {
-            Background = OxyColors.Transparent,
-            PlotAreaBorderColor = OxyColors.Transparent,
-            TextColor = OxyColor.Parse("#f8fafc")
-        };
-
         var products = _productService.GetProducts(_marketId);
-        var expiredTop5 = products
+        var expiredTop3 = products
             .Where(p => DateTime.Today > p.ExpiryDate)
             .GroupBy(p => p.Name)
             .Select(g => new { Name = g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)
-            .Take(5)
+            .Take(3)
             .ToList();
 
-        var categoryAxis = new CategoryAxis
-        {
-            Position = AxisPosition.Left,
-            Key = "ProductAxis",
-            TextColor = OxyColor.Parse("#94a3b8"),
-            AxislineColor = OxyColor.Parse("#334155"),
-            TicklineColor = OxyColor.Parse("#334155")
-        };
+        var list = new ObservableCollection<TopProductItem>();
+        int rank = 1;
 
-        foreach (var item in expiredTop5)
-        {
-            categoryAxis.Labels.Add(item.Name.Length > 12 ? item.Name[..12] + "…" : item.Name);
-        }
-        model.Axes.Add(categoryAxis);
+        // Turuncu - Mercan - Kırmızı tonları
+        string[] colors = { "#ef4444", "#f97316", "#f59e0b" };
 
-        var valueAxis = new LinearAxis
+        foreach (var item in expiredTop3)
         {
-            Position = AxisPosition.Bottom,
-            MinimumPadding = 0,
-            AbsoluteMinimum = 0,
-            TextColor = OxyColor.Parse("#94a3b8"),
-            AxislineColor = OxyColor.Parse("#334155"),
-            MajorGridlineStyle = LineStyle.Solid,
-            MajorGridlineColor = OxyColor.Parse("#1e293b")
-        };
-        model.Axes.Add(valueAxis);
-
-        var barSeries = new BarSeries
-        {
-            FillColor = OxyColor.Parse("#ef4444"),
-            StrokeColor = OxyColors.Transparent,
-            LabelPlacement = LabelPlacement.Inside,
-            LabelFormatString = "{0}"
-        };
-
-        foreach (var item in expiredTop5)
-        {
-            barSeries.Items.Add(new BarItem { Value = item.Count });
+            list.Add(new TopProductItem
+            {
+                Rank = rank,
+                Name = item.Name,
+                ValueText = $"{item.Count} Adet",
+                Icon = "🔥",
+                ColorHex = colors[(rank - 1) % colors.Length]
+            });
+            rank++;
         }
 
-        model.Series.Add(barSeries);
-        ExpiredChartModel = model;
+        TopExpiredProducts = list;
     }
 
-    private void LoadMostSoldChart()
+    private void LoadTopSoldProducts()
     {
-        var model = new PlotModel
-        {
-            Background = OxyColors.Transparent,
-            PlotAreaBorderColor = OxyColors.Transparent,
-            TextColor = OxyColor.Parse("#f8fafc")
-        };
-
         var products = _productService.GetProducts(_marketId);
-        var leastStock = products
+        var leastStockTop3 = products
             .OrderBy(p => p.Stock)
-            .Take(5)
+            .Take(3)
             .ToList();
 
-        var pieSeries = new PieSeries
-        {
-            StrokeThickness = 2,
-            InsideLabelPosition = 0.8,
-            AngleSpan = 360,
-            StartAngle = 0
-        };
+        var list = new ObservableCollection<TopProductItem>();
+        int rank = 1;
 
-        var colors = new[]
-        {
-            "#22c55e", "#16a34a", "#15803d", "#4ade80", "#86efac"
-        };
+        // Mint - Turkuaz - Mavi tonları
+        string[] colors = { "#2DD4BF", "#06b6d4", "#3b82f6" };
 
-        for (int i = 0; i < leastStock.Count; i++)
+        foreach (var p in leastStockTop3)
         {
-            var p = leastStock[i];
-            pieSeries.Slices.Add(new PieSlice(p.Name.Length > 15 ? p.Name[..15] + "…" : p.Name, Math.Max(1, 100 - p.Stock))
+            // En çok satılanlar için varsayımsal bir satış hızı/tahmin değeri formülü
+            var salesValue = Math.Max(1, 100 - p.Stock); 
+            list.Add(new TopProductItem
             {
-                Fill = OxyColor.Parse(colors[i % colors.Length])
+                Rank = rank,
+                Name = p.Name,
+                ValueText = $"{salesValue} Satış",
+                Icon = "📈",
+                ColorHex = colors[(rank - 1) % colors.Length]
             });
+            rank++;
         }
 
-        model.Series.Add(pieSeries);
-        MostSoldChartModel = model;
+        TopSoldProducts = list;
     }
 }
 
@@ -204,4 +177,13 @@ public class AlertItem
 {
     public string Message { get; set; } = string.Empty;
     public string Type { get; set; } = string.Empty;
+}
+
+public class TopProductItem
+{
+    public int Rank { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string ValueText { get; set; } = string.Empty;
+    public string Icon { get; set; } = string.Empty;
+    public string ColorHex { get; set; } = string.Empty;
 }

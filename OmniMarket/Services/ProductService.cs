@@ -61,28 +61,40 @@ public class ProductService
     /// <summary>
     /// Yeni ürün ekler.
     /// </summary>
-    public Product AddProduct(Product product)
+    public Product AddProduct(Product product, string kullaniciAdi)
     {
         using var db = new AppDbContext();
         db.Products.Add(product);
         db.SaveChanges();
+
+        // LOG
+        var logService = new LogService();
+        logService.AddLog(product.MarketId, kullaniciAdi, LogType.Ekleme, $"'{product.Name}' adlı yeni ürün stoğa eklendi (Stok: {product.Stock}).");
+
         return product;
     }
 
     /// <summary>
     /// Mevcut ürünü günceller.
     /// </summary>
-    public void UpdateProduct(Product product)
+    public void UpdateProduct(Product product, string kullaniciAdi)
     {
         using var db = new AppDbContext();
+        var existingProduct = db.Products.AsNoTracking().FirstOrDefault(p => p.Id == product.Id);
+        string oldStockStr = existingProduct != null ? existingProduct.Stock.ToString() : "?";
+
         db.Products.Update(product);
         db.SaveChanges();
+
+        // LOG
+        var logService = new LogService();
+        logService.AddLog(product.MarketId, kullaniciAdi, LogType.Guncelleme, $"'{product.Name}' ürünü güncellendi (Eski Stok: {oldStockStr} -> Yeni Stok: {product.Stock}).");
     }
 
     /// <summary>
     /// Ürünü siler.
     /// </summary>
-    public void DeleteProduct(int productId)
+    public void DeleteProduct(int productId, string kullaniciAdi)
     {
         using var db = new AppDbContext();
         var product = db.Products.Find(productId);
@@ -90,6 +102,10 @@ public class ProductService
         {
             db.Products.Remove(product);
             db.SaveChanges();
+
+            // LOG
+            var logService = new LogService();
+            logService.AddLog(product.MarketId, kullaniciAdi, LogType.Silme, $"'{product.Name}' adlı ürün sistemden tamamen silindi.");
         }
     }
 

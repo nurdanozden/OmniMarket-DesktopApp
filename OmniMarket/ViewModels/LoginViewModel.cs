@@ -61,6 +61,8 @@ public class LoginViewModel : BaseViewModel
         var market = _authService.Login(Username, Password);
         if (market != null)
         {
+            var logService = new LogService();
+            logService.AddLog(market.Id, market.Username, LogType.Login, "Sisteme giriş yapıldı (Oturum Açıldı).");
             LoginSucceeded?.Invoke(market);
         }
         else

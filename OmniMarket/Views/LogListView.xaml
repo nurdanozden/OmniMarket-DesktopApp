@@ -1,0 +1,148 @@
+<UserControl x:Class="OmniMarket.Views.LogListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:OmniMarket.ViewModels"
+             xmlns:models="clr-namespace:OmniMarket.Models"
+             mc:Ignorable="d" 
+             d:DesignHeight="750" d:DesignWidth="960"
+             Background="Transparent">
+    
+    <UserControl.Resources>
+        <!-- Arama kutusu stili (Neon Mor) -->
+        <Style x:Key="SearchTextBox" TargetType="TextBox" BasedOn="{StaticResource ModernTextBox}">
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#a855f7"/>
+                    <Setter Property="Effect" Value="{StaticResource GlowPurple}"/>
+                    <Setter Property="Background" Value="#20ffffff"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Timeline Node Template -->
+        <DataTemplate x:Key="LogItemTemplate" DataType="{x:Type models:Log}">
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <!-- Sol: Zaman Çizgisi ve Nokta -->
+                    <ColumnDefinition Width="60"/>
+                    <!-- Sağ: İçerik Kartı -->
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Dikey Çizgi ve Nokta -->
+                <Grid Grid.Column="0">
+                    <!-- Arka plan ince çizgi -->
+                    <Rectangle Width="2" Fill="#30ffffff" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,20,0,-24"/>
+                    
+                    <!-- Parlayan Daire (Renk DataTrigger ile değişecek) -->
+                    <Border x:Name="NodeCircle" Width="16" Height="16" CornerRadius="8" 
+                            Background="#00CED1" BorderBrush="#ffffff" BorderThickness="2"
+                            HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"
+                            Effect="{StaticResource GlowBlue}"/>
+                </Grid>
+
+                <!-- İçerik Kartı (Glassmorphism) -->
+                <Border Grid.Column="1" Style="{StaticResource GlassmorphismPanel}" Padding="20" Margin="0,0,24,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- İşlem Tipi Başlığı ve Kullanıcı -->
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0" MinWidth="120">
+                            <TextBlock Text="{Binding IslemTipi}" FontSize="14" FontWeight="Bold" Foreground="#f8fafc"/>
+                            <TextBlock Text="{Binding KullaniciAdi}" FontSize="12" Foreground="#94a3b8" Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <!-- Detay -->
+                        <TextBlock Grid.Column="1" Text="{Binding Detay}" FontSize="13" Foreground="#e2e8f0" 
+                                   TextWrapping="Wrap" VerticalAlignment="Center"/>
+
+                        <!-- Tarih -->
+                        <TextBlock Grid.Column="2" Text="{Binding Tarih, StringFormat='dd MMM yyyy HH:mm'}" 
+                                   FontSize="12" Foreground="#64748b" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                    </Grid>
+                </Border>
+
+                <!-- Kayarak gelme (Staggered) animasyonu için XAML EventTrigger -->
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                    From="0,50,0,0" To="0,0,0,24" Duration="0:0:0.6">
+                                    <ThicknessAnimation.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut"/>
+                                    </ThicknessAnimation.EasingFunction>
+                                </ThicknessAnimation>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                 From="0" To="1" Duration="0:0:0.6"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
+            </Grid>
+
+            <!-- DataTriggers to change the glowing node color based on LogType -->
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IslemTipi}" Value="Ekleme">
+                    <Setter TargetName="NodeCircle" Property="Background" Value="#39FF14"/>
+                    <Setter TargetName="NodeCircle" Property="Effect" Value="{StaticResource GlowGreen}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IslemTipi}" Value="Silme">
+                    <Setter TargetName="NodeCircle" Property="Background" Value="#FF073A"/>
+                    <Setter TargetName="NodeCircle" Property="Effect" Value="{StaticResource GlowRed}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IslemTipi}" Value="Guncelleme">
+                    <Setter TargetName="NodeCircle" Property="Background" Value="#00CED1"/>
+                    <Setter TargetName="NodeCircle" Property="Effect" Value="{StaticResource GlowBlue}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IslemTipi}" Value="Login">
+                    <Setter TargetName="NodeCircle" Property="Background" Value="#a855f7"/>
+                    <Setter TargetName="NodeCircle" Property="Effect" Value="{StaticResource GlowPurple}"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header ve Arama -->
+        <Border Grid.Row="0" Style="{StaticResource GlassmorphismPanel}" Padding="24" Margin="0,0,0,24">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="300"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="İşlem Geçmişi ve Güvenlik Logları" FontSize="28" FontWeight="Bold" Foreground="#ffffff">
+                        <TextBlock.Effect>
+                            <DropShadowEffect BlurRadius="15" Color="#a855f7" Opacity="0.5" ShadowDepth="0"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <TextBlock Text="Sistem üzerindeki tüm aktiviteleri ve yetkili işlemlerini takip edin." FontSize="14" Foreground="#94a3b8" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- Arama Kutusu (Live Search) -->
+                <TextBox Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                         Style="{StaticResource SearchTextBox}" Tag="Arama (Kullanıcı, İşlem...)" 
+                         VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Timeline Log Listesi -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding FilteredLogsView.View}" 
+                          ItemTemplate="{StaticResource LogItemTemplate}"/>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

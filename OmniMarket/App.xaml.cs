@@ -18,6 +18,27 @@ public partial class App : Application
         using (var db = new AppDbContext())
         {
             db.Database.EnsureCreated();
+
+            // Ef Core EnsureCreated() var olan veritabanına yeni tablo eklemediği için
+            // Logs tablosunu eğer yoksa raw SQL ile oluşturuyoruz (PostgreSQL).
+            try
+            {
+                db.Database.ExecuteSqlRaw(@"
+                    CREATE TABLE IF NOT EXISTS ""Logs"" (
+                        ""Id"" uuid NOT NULL,
+                        ""MarketId"" integer NOT NULL,
+                        ""KullaniciAdi"" character varying(100) NOT NULL,
+                        ""IslemTipi"" integer NOT NULL,
+                        ""Detay"" character varying(500) NOT NULL,
+                        ""Tarih"" timestamp with time zone NOT NULL,
+                        CONSTRAINT ""PK_Logs"" PRIMARY KEY (""Id""),
+                        CONSTRAINT ""FK_Logs_Markets_MarketId"" FOREIGN KEY (""MarketId"")
+                            REFERENCES ""Markets"" (""Id"") ON DELETE CASCADE
+                    );
+                ");
+            }
+            catch { /* Hata görmezden geliniyor (Zaten varsa vs.) */ }
+
             DataSeeder.Seed(db);
         }
 

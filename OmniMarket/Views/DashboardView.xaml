@@ -3,6 +3,40 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:oxy="http://oxyplot.org/wpf">
 
+    <UserControl.Resources>
+        <!-- İnteraktif kart stili: Glassmorphism + Glow -->
+        <Style x:Key="StatCardButton" TargetType="Button">
+            <Setter Property="Background" Value="#15ffffff"/>
+            <Setter Property="BorderBrush" Value="#30ffffff"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="CardBorder"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="16" Padding="20"
+                                Effect="{TemplateBinding Effect}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CardBorder" Property="Background" Value="#25ffffff"/>
+                                <Setter TargetName="CardBorder" Property="BorderBrush" Value="#ffffff"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="CardBorder" Property="Background" Value="#30ffffff"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid Margin="24">
             <Grid.RowDefinitions>
@@ -14,60 +48,73 @@
 
             <!-- Header -->
             <StackPanel Grid.Row="0" Margin="0,0,0,24">
-                <TextBlock Text="Dashboard" FontSize="28" FontWeight="Bold" Foreground="#f8fafc"/>
+                <TextBlock Text="Dashboard" FontSize="32" FontWeight="Bold" Foreground="#ffffff">
+                    <TextBlock.Effect>
+                        <DropShadowEffect BlurRadius="15" Color="#00CED1" Opacity="0.5" ShadowDepth="0"/>
+                    </TextBlock.Effect>
+                </TextBlock>
                 <TextBlock Text="Market durumunuza genel bakış" FontSize="14" Foreground="#94a3b8" Margin="0,4,0,0"/>
             </StackPanel>
 
-            <!-- Stats Cards -->
+            <!-- Stats Cards – Tıklanabilir -->
             <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,24">
                 <!-- Toplam Ürün -->
-                <Border Background="#1e293b" CornerRadius="12" Padding="20" Margin="0,0,12,0"
-                        Effect="{StaticResource CardShadow}">
+                <Button Style="{StaticResource StatCardButton}" Margin="0,0,12,0"
+                        Command="{Binding NavigateToAllProductsCommand}"
+                        Effect="{StaticResource GlowBlue}">
                     <StackPanel>
                         <TextBlock Text="📦" FontSize="28" Margin="0,0,0,8"/>
-                        <TextBlock Text="Toplam Ürün" Foreground="#94a3b8" FontSize="12"/>
-                        <TextBlock Text="{Binding TotalProducts}" Foreground="#f8fafc" FontSize="32" FontWeight="Bold"/>
+                        <TextBlock Text="Toplam Ürün" Foreground="#ffffff" FontSize="12"/>
+                        <TextBlock Text="{Binding TotalProducts}" Foreground="#ffffff" FontSize="32" FontWeight="Bold"/>
+                        <TextBlock Text="Tıkla → Tüm ürünleri gör" Foreground="#ffffff" FontSize="15" Margin="0,6,0,0"/>
                     </StackPanel>
-                </Border>
+                </Button>
 
                 <!-- SKT Yaklaşan -->
-                <Border Background="#1e293b" CornerRadius="12" Padding="20" Margin="6,0,6,0"
-                        Effect="{StaticResource CardShadow}">
+                <Button Style="{StaticResource StatCardButton}" Margin="6,0,6,0"
+                        Command="{Binding NavigateToExpiringCommand}"
+                        Effect="{StaticResource GlowAmber}">
                     <StackPanel>
-                        <TextBlock Text="⏰" FontSize="28" Margin="0,0,0,8"/>
-                        <TextBlock Text="SKT Yaklaşan" Foreground="#94a3b8" FontSize="12"/>
-                        <TextBlock Text="{Binding ExpiringProducts}" Foreground="#f59e0b" FontSize="32" FontWeight="Bold"/>
+                        <TextBlock Text="⏳" FontSize="28" Margin="0,0,0,8"/>
+                        <TextBlock Text="SKT Yaklaşan" Foreground="#ffffff" FontSize="12"/>
+                        <TextBlock Text="{Binding ExpiringProducts}" Foreground="#ffffff" FontSize="32" FontWeight="Bold"/>
+                        <TextBlock Text="Tıkla → Yaklaşanları gör" Foreground="#ffffff" FontSize="15" Margin="0,6,0,0"/>
                     </StackPanel>
-                </Border>
+                </Button>
 
                 <!-- SKT Geçmiş -->
-                <Border Background="#1e293b" CornerRadius="12" Padding="20" Margin="6,0,6,0"
-                        Effect="{StaticResource CardShadow}">
+                <Button Style="{StaticResource StatCardButton}" Margin="6,0,6,0"
+                        Command="{Binding NavigateToExpiredCommand}"
+                        Effect="{StaticResource GlowRed}">
+                    <!-- Glitch/Pulse efekti Triggers/Storyboard ile eklenebilir, şimdilik glow veriyoruz -->
                     <StackPanel>
                         <TextBlock Text="⚠" FontSize="28" Margin="0,0,0,8"/>
-                        <TextBlock Text="SKT Geçmiş" Foreground="#94a3b8" FontSize="12"/>
-                        <TextBlock Text="{Binding ExpiredProducts}" Foreground="#ef4444" FontSize="32" FontWeight="Bold"/>
+                        <TextBlock Text="SKT Geçmiş" Foreground="#ffffff" FontSize="12"/>
+                        <TextBlock Text="{Binding ExpiredProducts}" Foreground="#ffffff" FontSize="32" FontWeight="Bold"/>
+                        <TextBlock Text="Tıkla → Geçmişleri gör" Foreground="#ffffff" FontSize="15" Margin="0,6,0,0"/>
                     </StackPanel>
-                </Border>
+                </Button>
 
                 <!-- Stok Değeri -->
-                <Border Background="#1e293b" CornerRadius="12" Padding="20" Margin="12,0,0,0"
-                        Effect="{StaticResource CardShadow}">
+                <Button Style="{StaticResource StatCardButton}" Margin="12,0,0,0"
+                        Command="{Binding NavigateToStockValueCommand}"
+                        Effect="{StaticResource GlowGreen}">
                     <StackPanel>
                         <TextBlock Text="💰" FontSize="28" Margin="0,0,0,8"/>
-                        <TextBlock Text="Toplam Stok Değeri" Foreground="#94a3b8" FontSize="12"/>
-                        <TextBlock Foreground="#22c55e" FontSize="26" FontWeight="Bold">
+                        <TextBlock Text="Toplam Stok Değeri" Foreground="#ffffff" FontSize="12"/>
+                        <TextBlock Foreground="#ffffff" FontSize="26" FontWeight="Bold">
                             <TextBlock.Text>
                                 <MultiBinding StringFormat="{}{0:N2} ₺">
                                     <Binding Path="TotalStockValue"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
+                        <TextBlock Text="Tıkla → Değere göre sırala" Foreground="#ffffff" FontSize="15" Margin="0,6,0,0"/>
                     </StackPanel>
-                </Border>
+                </Button>
             </UniformGrid>
 
-            <!-- Charts Row -->
+            <!-- Top 3 Lists Row -->
             <Grid Grid.Row="2" Margin="0,0,0,24">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -75,43 +122,127 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- En Çok Ziyan Olan – Bar Chart -->
-                <Border Grid.Column="0" Background="#1e293b" CornerRadius="12" Padding="20"
+                <!-- En Çok Ziyan Olan 3 Ürün -->
+                <Border Grid.Column="0" Style="{StaticResource GlassmorphismPanel}" Padding="24"
                         Effect="{StaticResource CardShadow}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="300"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
-                            <TextBlock Text="📊" FontSize="18" Margin="0,0,8,0"/>
-                            <TextBlock Text="En Çok Ziyan Olan Ürünler" FontSize="16" FontWeight="SemiBold"
-                                       Foreground="#f8fafc" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+                            <Border Background="#fef2f2" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                <TextBlock Text="🔥" FontSize="20"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="En Çok Ziyan Olan 3 Ürün" FontSize="18" FontWeight="Bold" Foreground="#f8fafc"/>
+                                <TextBlock Text="Son kullanma tarihi geçenler" FontSize="13" Foreground="#94a3b8" Margin="0,2,0,0"/>
+                            </StackPanel>
                         </StackPanel>
-                        <oxy:PlotView Grid.Row="1" Model="{Binding ExpiredChartModel}" Background="Transparent"/>
+
+                        <!-- Empty State -->
+                        <TextBlock Grid.Row="1" Text="Harika! Ziyan olan ürün yok." 
+                                   Foreground="#22c55e" FontSize="15" FontStyle="Italic"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Visibility="{Binding TopExpiredProducts.Count, Converter={StaticResource ZeroToVisibility}}"/>
+
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding TopExpiredProducts}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#10ffffff" BorderBrush="#20ffffff" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,12">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <!-- Rank Circle -->
+                                            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" 
+                                                    Background="#1e293b" Margin="0,0,16,0">
+                                                <TextBlock Text="{Binding Rank}" Foreground="#94a3b8" 
+                                                           FontSize="16" FontWeight="Bold" 
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" Foreground="#f8fafc" FontSize="16" FontWeight="SemiBold"/>
+                                                <TextBlock Text="Kategori: Karışık" Foreground="#64748b" FontSize="13" Margin="0,2,0,0" Visibility="Collapsed"/>
+                                            </StackPanel>
+
+                                            <!-- Value Badge -->
+                                            <Border Grid.Column="2" Background="#20ffffff" BorderBrush="{Binding ColorHex}" BorderThickness="1" CornerRadius="8" Padding="12,8" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding ValueText}" Foreground="{Binding ColorHex}" 
+                                                           FontSize="15" FontWeight="Bold"
+                                                           Effect="{StaticResource GlowRed}"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </Grid>
                 </Border>
 
-                <!-- En Çok Satılan – Pie Chart -->
-                <Border Grid.Column="2" Background="#1e293b" CornerRadius="12" Padding="20"
+                <!-- En Çok Satılan 3 Ürün -->
+                <Border Grid.Column="2" Style="{StaticResource GlassmorphismPanel}" Padding="24"
                         Effect="{StaticResource CardShadow}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="300"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
-                            <TextBlock Text="📈" FontSize="18" Margin="0,0,8,0"/>
-                            <TextBlock Text="En Çok Satılan Ürünler" FontSize="16" FontWeight="SemiBold"
-                                       Foreground="#f8fafc" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+                            <Border Background="#f0fdfa" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                <TextBlock Text="🚀" FontSize="20"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="En Çok Satılan 3 Ürün" FontSize="18" FontWeight="Bold" Foreground="#f8fafc"/>
+                                <TextBlock Text="Satış performansı en yüksekler" FontSize="13" Foreground="#94a3b8" Margin="0,2,0,0"/>
+                            </StackPanel>
                         </StackPanel>
-                        <oxy:PlotView Grid.Row="1" Model="{Binding MostSoldChartModel}" Background="Transparent"/>
+
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding TopSoldProducts}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#10ffffff" BorderBrush="#20ffffff" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,12">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <!-- Rank Circle -->
+                                            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" 
+                                                    Background="#1e293b" Margin="0,0,16,0">
+                                                <TextBlock Text="{Binding Rank}" Foreground="#94a3b8" 
+                                                           FontSize="16" FontWeight="Bold" 
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" Foreground="#f8fafc" FontSize="16" FontWeight="SemiBold"/>
+                                                <TextBlock Text="Kategori: Karışık" Foreground="#64748b" FontSize="13" Margin="0,2,0,0" Visibility="Collapsed"/>
+                                            </StackPanel>
+
+                                            <!-- Value Badge -->
+                                            <Border Grid.Column="2" Background="#20ffffff" BorderBrush="{Binding ColorHex}" BorderThickness="1" CornerRadius="8" Padding="12,8" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding ValueText}" Foreground="{Binding ColorHex}" 
+                                                           FontSize="15" FontWeight="Bold"
+                                                           Effect="{StaticResource GlowBlue}"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </Grid>
                 </Border>
             </Grid>
 
             <!-- Alerts Panel -->
-            <Border Grid.Row="3" Background="#1e293b" CornerRadius="12" Padding="20"
+            <Border Grid.Row="3" Style="{StaticResource GlassmorphismPanel}" Padding="20"
                     Effect="{StaticResource CardShadow}" MinHeight="150">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -124,14 +255,29 @@
                         <TextBlock Text="Akıllı Uyarılar" FontSize="18" FontWeight="SemiBold" Foreground="#f8fafc"
                                    VerticalAlignment="Center"/>
                         <Button Content="↻ Yenile" Command="{Binding RefreshCommand}"
-                                Style="{StaticResource SmallButton}" Margin="16,0,0,0"/>
+                                Style="{StaticResource SmallButton}" Margin="16,0,0,0"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Button.RenderTransform>
+                                <RotateTransform Angle="0"/>
+                            </Button.RenderTransform>
+                            <Button.Triggers>
+                                <EventTrigger RoutedEvent="Button.Click">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                             From="0" To="360" Duration="0:0:0.5" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Button.Triggers>
+                        </Button>
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="250">
                         <ItemsControl ItemsSource="{Binding Alerts}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="#0f172a" CornerRadius="8" Padding="12" Margin="0,0,0,8">
+                                    <Border Background="#10ffffff" BorderBrush="#20ffffff" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,8">
                                         <TextBlock Text="{Binding Message}" Foreground="#e2e8f0"
                                                    FontSize="13" TextWrapping="Wrap"/>
                                     </Border>

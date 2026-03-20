@@ -34,7 +34,13 @@
         </Grid>
 
         <!-- Search / Filter Bar -->
-        <Border Grid.Row="1" Background="#1e293b" CornerRadius="12" Padding="16" Margin="0,0,0,16"
+        <!-- Aktif filtre etiketi (Dashboard'dan gelindiğinde görünür) -->
+        <TextBlock Grid.Row="1" Text="{Binding ActiveFilterLabel}" 
+                   Foreground="#60a5fa" FontSize="13" FontWeight="SemiBold"
+                   Margin="0,0,0,8"
+                   Visibility="{Binding ActiveFilterLabel, Converter={StaticResource StringToVisibility}}"/>
+
+        <Border Grid.Row="1" Background="#1e293b" CornerRadius="12" Padding="16" Margin="0,28,0,16"
                 Effect="{StaticResource CardShadow}">
             <Grid>
                 <Grid.ColumnDefinitions>

@@ -11,12 +11,22 @@ public class ProductListViewModel : BaseViewModel
     private readonly ProductService _productService = new();
     private static readonly Random _rng = new();
     private int _marketId;
+    private string _marketName = string.Empty;
+    private string? _initialFilter;
 
     private ObservableCollection<Product> _products = new();
     private Product? _selectedProduct;
     private string _searchText = string.Empty;
     private string _selectedCategory = string.Empty;
     private List<string> _categories = new();
+
+    // Aktif filtre bilgisi (UI'da göstermek için)
+    private string _activeFilterLabel = string.Empty;
+    public string ActiveFilterLabel
+    {
+        get => _activeFilterLabel;
+        set => SetProperty(ref _activeFilterLabel, value);
+    }
 
     // Sabit kategori listesi (form için)
     public List<string> FormCategories { get; } = new()
@@ -131,10 +141,13 @@ public class ProductListViewModel : BaseViewModel
         GenerateBarcodeCommand = new RelayCommand(GenerateBarcode);
     }
 
-    public void Initialize(int marketId)
+    public void Initialize(int marketId, string marketName, string? filter = null)
     {
         _marketId = marketId;
+        _marketName = marketName;
+        _initialFilter = filter;
         LoadProducts();
+        ApplyInitialFilter();
     }
 
     private void LoadProducts()
@@ -145,6 +158,45 @@ public class ProductListViewModel : BaseViewModel
         var categories = _productService.GetCategories(_marketId);
         categories.Insert(0, "Tüm Kategoriler");
         Categories = categories;
+    }
+
+    private void ApplyInitialFilter()
+    {
+        if (string.IsNullOrEmpty(_initialFilter))
+        {
+            ActiveFilterLabel = string.Empty;
+            return;
+        }
+
+        var allProducts = _productService.GetProducts(_marketId);
+        List<Product> filtered;
+
+        switch (_initialFilter)
+        {
+            case "expired":
+                filtered = allProducts.Where(p => DateTime.Today > p.ExpiryDate).ToList();
+                ActiveFilterLabel = "🔴 Filtre: SKT Geçmiş Ürünler";
+                break;
+            case "expiring":
+                filtered = allProducts.Where(p => DateTime.Today <= p.ExpiryDate && (p.ExpiryDate - DateTime.Today).TotalDays <= 7).ToList();
+                ActiveFilterLabel = "🟡 Filtre: SKT Yaklaşan Ürünler";
+                break;
+            case "all":
+                filtered = allProducts;
+                ActiveFilterLabel = "📦 Filtre: Tüm Ürünler";
+                break;
+            case "stockvalue":
+                filtered = allProducts.OrderByDescending(p => p.SalePrice * p.Stock).ToList();
+                ActiveFilterLabel = "💰 Filtre: Stok Değerine Göre";
+                break;
+            default:
+                filtered = allProducts;
+                ActiveFilterLabel = string.Empty;
+                break;
+        }
+
+        Products = new ObservableCollection<Product>(filtered);
+        _initialFilter = null; // Tek seferlik filtre
     }
 
     private void ExecuteSearch()
@@ -238,7 +290,7 @@ public class ProductListViewModel : BaseViewModel
 
         if (result == MessageBoxResult.Yes)
         {
-            _productService.DeleteProduct(SelectedProduct.Id);
+            _productService.DeleteProduct(SelectedProduct.Id, _marketName);
             LoadProducts();
         }
     }
@@ -302,7 +354,7 @@ public class ProductListViewModel : BaseViewModel
                 ExpiryDate = DateTime.SpecifyKind(FormExpiryDate, DateTimeKind.Utc),
                 MarketId = _marketId
             };
-            _productService.UpdateProduct(product);
+            _productService.UpdateProduct(product, _marketName);
         }
         else
         {
@@ -317,7 +369,7 @@ public class ProductListViewModel : BaseViewModel
                 ExpiryDate = DateTime.SpecifyKind(FormExpiryDate, DateTimeKind.Utc),
                 MarketId = _marketId
             };
-            _productService.AddProduct(product);
+            _productService.AddProduct(product, _marketName);
         }
 
         HideForm();
