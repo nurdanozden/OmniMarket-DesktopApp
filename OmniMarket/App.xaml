@@ -1,4 +1,4 @@
-﻿<Application x:Class="OmniMarket.App"
+<Application x:Class="OmniMarket.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:helpers="clr-namespace:OmniMarket.Helpers">
@@ -29,21 +29,21 @@
 
         <!-- Soft pastel background -->
         <LinearGradientBrush x:Key="SpaceBackground" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#ECFDF5" Offset="0.0"/>
-            <GradientStop Color="#F0F9FF" Offset="0.6"/>
-            <GradientStop Color="#E0F2FE" Offset="1.0"/>
+            <GradientStop Color="#FFEDFA" Offset="0"/>
+            <GradientStop Color="#FFF2E8" Offset="0.5"/>
+            <GradientStop Color="#EAF2FF" Offset="1"/>
         </LinearGradientBrush>
 
-        <!-- Sidebar wood-like background -->
+        <!-- Sidebar cute background -->
         <LinearGradientBrush x:Key="WoodSidebarBackground" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#FDE68A" Offset="0"/>
-            <GradientStop Color="#FCD34D" Offset="0.5"/>
-            <GradientStop Color="#FBBF24" Offset="1"/>
+            <GradientStop Color="#FBCFE8" Offset="0"/>
+            <GradientStop Color="#FCE7F3" Offset="0.5"/>
+            <GradientStop Color="#FDF2F8" Offset="1"/>
         </LinearGradientBrush>
 
         <!-- ===== Shadow Effects ===== -->
-        <DropShadowEffect x:Key="CardShadow" BlurRadius="18" Direction="270"
-                          ShadowDepth="4" Opacity="0.2" Color="#94A3B8"/>
+        <DropShadowEffect x:Key="CardShadow" BlurRadius="25" Direction="270"
+                          ShadowDepth="8" Opacity="0.15" Color="#F472B6"/>
 
         <DropShadowEffect x:Key="GlowBlue" BlurRadius="10" ShadowDepth="0" Color="#93C5FD" Opacity="0.6"/>
         <DropShadowEffect x:Key="GlowRed" BlurRadius="12" ShadowDepth="0" Color="#F9A8D4" Opacity="0.6"/>
@@ -54,9 +54,9 @@
 
         <!-- Glassmorphism Panel Style -->
         <Style x:Key="GlassmorphismPanel" TargetType="Border">
-            <Setter Property="Background" Value="#E6FEFCE8"/>
-            <Setter Property="BorderBrush" Value="#D1D5DB"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#E6FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="CornerRadius" Value="24"/>
         </Style>
 
@@ -246,6 +246,23 @@
             <Setter Property="Foreground" Value="#1D4ED8"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="Padding" Value="12,6"/>
+        </Style>
+
+        <!-- Cute Button -->
+        <Style x:Key="CuteButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#F472B6" Offset="0"/>
+                        <GradientStop Color="#EC4899" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Heavy"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="BorderThickness" Value="0"/>
         </Style>
 
         <!-- Sidebar Button -->

@@ -18,8 +18,28 @@
         </Style>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Margin="24">
+    <Grid>
+        <!-- Cute Vibrant Background Gradient -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FFEDFA" Offset="0"/>
+                <GradientStop Color="#FFF2E8" Offset="0.5"/>
+                <GradientStop Color="#EAF2FF" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Blobs for "Süslü" look -->
+        <Grid IsHitTestVisible="False" ClipToBounds="True">
+            <Ellipse Width="400" Height="400" Fill="#FFD1E8" Opacity="0.5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-100,-100,0,0">
+                <Ellipse.Effect><BlurEffect Radius="80"/></Ellipse.Effect>
+            </Ellipse>
+            <Ellipse Width="500" Height="500" Fill="#D1E8FF" Opacity="0.5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-150,-150">
+                <Ellipse.Effect><BlurEffect Radius="100"/></Ellipse.Effect>
+            </Ellipse>
+        </Grid>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid Margin="24">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -28,8 +48,8 @@
 
             <!-- Header -->
             <StackPanel Grid.Row="0" Margin="0,0,0,20">
-                <TextBlock Text="Ayarlar &amp; Profil" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                <TextBlock Text="Market profil bilgilerinizi y&#246;netin" FontSize="14" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+                <TextBlock Text="Ayarlar &amp; Profil 🌸" FontSize="32" FontWeight="Heavy" FontFamily="Comic Sans MS, Segoe UI Print, Segoe UI" Foreground="#EC4899"/>
+                <TextBlock Text="Marketinizin sihirli ayarlarını buradan yönetin ✨" FontSize="15" Foreground="#9CA3AF" FontWeight="SemiBold" Margin="0,4,0,0"/>
             </StackPanel>
 
             <!-- Profile Card -->
@@ -41,13 +61,13 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Width="72" Height="72" CornerRadius="24" Background="#FEF3C7" Margin="0,0,16,0">
-                        <TextBlock Text="&#x1F3EA;" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border Width="72" Height="72" CornerRadius="24" Background="#FFD1E8" Margin="0,0,16,0">
+                        <TextBlock Text="🌸" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                         <TextBlock Text="{Binding MarketAdi}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                        <TextBlock Text="Kasaba Market Profili" FontSize="13" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+                        <TextBlock Text="Sihirli Market Profili ✨" FontSize="13" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -102,11 +122,16 @@
                         <!-- Tema Seçici Kaldırıldı -->
 
                         <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="Kaydet" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Width="120"/>
+                            <Button Content="✨ Büyüyü Kaydet ✨" Command="{Binding SaveCommand}" Style="{StaticResource CuteButton}" Padding="20,12">
+                                <Button.Effect>
+                                    <DropShadowEffect BlurRadius="15" Color="#F472B6" ShadowDepth="4" Opacity="0.4"/>
+                                </Button.Effect>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
             </Border>
         </Grid>
     </ScrollViewer>
+    </Grid>
 </UserControl>
