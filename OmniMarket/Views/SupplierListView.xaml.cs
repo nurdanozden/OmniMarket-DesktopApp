@@ -2,9 +2,9 @@
 
 namespace OmniMarket.Views;
 
-public partial class ProductListView : UserControl
+public partial class SupplierListView : UserControl
 {
-    public ProductListView()
+    public SupplierListView()
     {
         InitializeComponent();
     }

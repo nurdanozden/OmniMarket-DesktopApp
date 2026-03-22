@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Data;
 using OmniMarket.Helpers;
 using OmniMarket.Models;

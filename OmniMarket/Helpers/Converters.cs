@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -51,9 +51,9 @@ public class ExpiryStatusConverter : IValueConverter
         {
             return status switch
             {
-                "Expired" => new SolidColorBrush(Color.FromRgb(239, 68, 68)),   // Kırmızı
-                "Warning" => new SolidColorBrush(Color.FromRgb(245, 158, 11)),  // Sarı/Turuncu
-                "Normal"  => new SolidColorBrush(Color.FromRgb(34, 197, 94)),   // Yeşil
+                "Expired" => new SolidColorBrush(Color.FromRgb(239, 68, 68)),   // Red
+                "Warning" => new SolidColorBrush(Color.FromRgb(249, 115, 22)),   // Soft orange
+                "Normal"  => new SolidColorBrush(Color.FromRgb(16, 185, 129)),   // Soft green
                 _ => new SolidColorBrush(Colors.Gray)
             };
         }
@@ -101,9 +101,42 @@ public class StockWarningConverter : IValueConverter
     {
         if (value is bool isLow && isLow)
         {
-            return new SolidColorBrush(Color.FromRgb(239, 68, 68)); // Kırmızı
+            return new SolidColorBrush(Color.FromRgb(249, 115, 22)); // Soft orange
         }
-        return new SolidColorBrush(Color.FromRgb(148, 163, 184)); // Normal gri
+        return new SolidColorBrush(Color.FromRgb(107, 114, 128)); // Muted gray
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+/// <summary>
+/// Kategori adına göre emoji döndüren converter.
+/// </summary>
+public class CategoryToEmojiConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is string category)
+        {
+            return category switch
+            {
+                "Süt" or "Süt & Süt Ürünleri" => "🥛",
+                "Meyve & Sebze" => "🍎",
+                "Fırın" => "🍞",
+                "Kahvaltılık" => "🍳",
+                "İçecek" or "İçecekler" => "🥤",
+                "Atıştırmalık" or "Atıştırmalıklar" => "🍫",
+                "Temizlik" or "Temizlik Ürünleri" => "🧼",
+                "Bakliyat" or "Un & Bakliyat" => "🌾",
+                "Çay & Kahve" => "☕",
+                "Dondurulmuş Gıda" or "Dondurulmuş Gıdalar" => "🧊",
+                _ => "📦"
+            };
+        }
+        return "📦";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

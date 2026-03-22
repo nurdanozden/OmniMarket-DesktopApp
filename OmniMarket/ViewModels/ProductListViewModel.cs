@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using OmniMarket.Helpers;
 using OmniMarket.Models;
@@ -126,6 +126,7 @@ public class ProductListViewModel : BaseViewModel
     public RelayCommand RefreshCommand { get; }
     public RelayCommand ClearFilterCommand { get; }
     public RelayCommand GenerateBarcodeCommand { get; }
+    public RelayCommand CallSupplierCommand { get; }
 
     #endregion
 
@@ -139,6 +140,7 @@ public class ProductListViewModel : BaseViewModel
         RefreshCommand = new RelayCommand(LoadProducts);
         ClearFilterCommand = new RelayCommand(ClearFilter);
         GenerateBarcodeCommand = new RelayCommand(GenerateBarcode);
+        CallSupplierCommand = new RelayCommand(ExecuteCallSupplier);
     }
 
     public void Initialize(int marketId, string marketName, string? filter = null)
@@ -391,5 +393,14 @@ public class ProductListViewModel : BaseViewModel
         FormPurchasePrice = 0;
         FormSalePrice = 0;
         FormExpiryDate = DateTime.Today.AddMonths(6);
+    }
+
+    private void ExecuteCallSupplier(object? parameter)
+    {
+        if (parameter is Product product && product.Tedarikci != null)
+        {
+            MessageBox.Show($"Tedarikçiyi Ara: {product.Tedarikci.IletisimNo}",
+                $"{product.Tedarikci.Ad}", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
     }
 }

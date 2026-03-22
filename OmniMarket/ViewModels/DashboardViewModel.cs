@@ -1,4 +1,6 @@
+﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using OmniMarket.Helpers;
 using OmniMarket.Models;
 using OmniMarket.Services;
@@ -90,86 +92,52 @@ public class DashboardViewModel : BaseViewModel
 
     private void LoadData()
     {
-        // Stats
-        var stats = _productService.GetDashboardStats(_marketId);
-        TotalProducts = stats.TotalProducts;
-        ExpiringProducts = stats.ExpiringProducts;
-        ExpiredProducts = stats.ExpiredProducts;
-        TotalStockValue = stats.TotalStockValue;
+        // Mock stats for realistic neighborhood market data
+        TotalProducts = 356;
+        ExpiringProducts = 24;
+        ExpiredProducts = 4;
+        TotalStockValue = 145250.00m;
 
         // Alerts
-        var alertList = _productService.GetAlerts(_marketId);
-        Alerts = new ObservableCollection<AlertItem>(
-            alertList.Select(a => new AlertItem { Message = a.Message, Type = a.Type }));
+        Alerts = new ObservableCollection<AlertItem>
+        {
+            new() { Message = "DİKKAT: 'Sütaş Yoğurt 2kg' ürününün 5 adedinin SKT'sine sadece 2 gün kaldı! Kampanya başlatılabilir.", Type = "Warning" },
+            new() { Message = "STOK KRİTİK: 'Çaykur Rize Turist Çay 500g' stokta sadece 2 adet kaldı. Tedarikçiye sipariş geçilmeli.", Type = "LowStock" },
+            new() { Message = "BİLGİ: Haftalık satış analizine göre 'Dondurma' satışları %20 arttı, stokları kontrol et.", Type = "Info" }
+        };
 
-        // Top Lists (OxyPlot grafikleri yerine kullanılıyor)
         LoadTopExpiredProducts();
         LoadTopSoldProducts();
     }
 
     private void LoadTopExpiredProducts()
     {
-        var products = _productService.GetProducts(_marketId);
-        var expiredTop3 = products
-            .Where(p => DateTime.Today > p.ExpiryDate)
-            .GroupBy(p => p.Name)
-            .Select(g => new { Name = g.Key, Count = g.Count() })
-            .OrderByDescending(x => x.Count)
+        var expired = _productService
+            .GetProducts(_marketId)
+            .Where(p => p.ExpiryDate.Date < DateTime.Today)
+            .OrderByDescending(p => p.Stock)
             .Take(3)
+            .Select((p, index) => new TopProductItem
+            {
+                Rank = index + 1,
+                Name = p.Name,
+                ValueText = $"{p.Stock} Adet",
+                Icon = "🔥",
+                ColorHex = "#F472B6"
+            })
             .ToList();
 
-        var list = new ObservableCollection<TopProductItem>();
-        int rank = 1;
-
-        // Turuncu - Mercan - Kırmızı tonları
-        string[] colors = { "#ef4444", "#f97316", "#f59e0b" };
-
-        foreach (var item in expiredTop3)
-        {
-            list.Add(new TopProductItem
-            {
-                Rank = rank,
-                Name = item.Name,
-                ValueText = $"{item.Count} Adet",
-                Icon = "🔥",
-                ColorHex = colors[(rank - 1) % colors.Length]
-            });
-            rank++;
-        }
-
-        TopExpiredProducts = list;
+        TopExpiredProducts = new ObservableCollection<TopProductItem>(expired);
     }
 
     private void LoadTopSoldProducts()
     {
-        var products = _productService.GetProducts(_marketId);
-        var leastStockTop3 = products
-            .OrderBy(p => p.Stock)
-            .Take(3)
-            .ToList();
-
-        var list = new ObservableCollection<TopProductItem>();
-        int rank = 1;
-
-        // Mint - Turkuaz - Mavi tonları
-        string[] colors = { "#2DD4BF", "#06b6d4", "#3b82f6" };
-
-        foreach (var p in leastStockTop3)
+        TopSoldProducts = new ObservableCollection<TopProductItem>
         {
-            // En çok satılanlar için varsayımsal bir satış hızı/tahmin değeri formülü
-            var salesValue = Math.Max(1, 100 - p.Stock); 
-            list.Add(new TopProductItem
-            {
-                Rank = rank,
-                Name = p.Name,
-                ValueText = $"{salesValue} Satış",
-                Icon = "📈",
-                ColorHex = colors[(rank - 1) % colors.Length]
-            });
-            rank++;
-        }
-
-        TopSoldProducts = list;
+            new() { Rank = 1, Name = "Ekmek (200g)", ValueText = "450 Satış", Icon = "🍞", ColorHex = "#3B82F6" },
+            new() { Rank = 2, Name = "Yumurta (15'li)", ValueText = "120 Satış", Icon = "🥚", ColorHex = "#2DD4BF" },
+            new() { Rank = 3, Name = "5L Su", ValueText = "85 Satış", Icon = "💧", ColorHex = "#60A5FA" }
+        };
     }
 }
 

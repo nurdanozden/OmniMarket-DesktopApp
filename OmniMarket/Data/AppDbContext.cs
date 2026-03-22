@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OmniMarket.Models;
 
 namespace OmniMarket.Data;
@@ -8,6 +8,8 @@ public class AppDbContext : DbContext
     public DbSet<Market> Markets { get; set; } = null!;
     public DbSet<Product> Products { get; set; } = null!;
     public DbSet<Log> Logs { get; set; } = null!;
+    public DbSet<Tedarikci> Tedarikciler { get; set; } = null!;
+    public DbSet<MarketProfil> MarketProfiller { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -26,11 +28,25 @@ public class AppDbContext : DbContext
             .HasForeignKey(p => p.MarketId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Market → Logs (1:N)
-        modelBuilder.Entity<Log>()
-            .HasOne(l => l.Market)
-            .WithMany()
-            .HasForeignKey(l => l.MarketId)
+        // Market → Suppliers (1:N)
+        modelBuilder.Entity<Tedarikci>()
+            .HasOne(s => s.Market)
+            .WithMany(m => m.Tedarikciler)
+            .HasForeignKey(s => s.MarketId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Supplier → Products (1:N)
+        modelBuilder.Entity<Product>()
+            .HasOne(p => p.Tedarikci)
+            .WithMany(s => s.Products)
+            .HasForeignKey(p => p.TedarikciId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Market → MarketProfil (1:1)
+        modelBuilder.Entity<Market>()
+            .HasOne(m => m.MarketProfil)
+            .WithOne(p => p.Market)
+            .HasForeignKey<MarketProfil>(p => p.MarketId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Unique username constraint

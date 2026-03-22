@@ -7,6 +7,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -19,28 +20,27 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <TextBlock Text="Ürün Yönetimi" FontSize="28" FontWeight="Bold" Foreground="#f8fafc"/>
-                <TextBlock Text="Depo ürünlerinizi yönetin" FontSize="14" Foreground="#94a3b8" Margin="0,4,0,0"/>
+                <TextBlock Text="Ürün Yönetimi" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                <TextBlock Text="Depo ürünlerinizi yönetin" FontSize="14" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button Content="➕ Yeni Ürün" Command="{Binding AddProductCommand}"
-                        Style="{StaticResource PrimaryButton}" Width="130" Margin="0,0,8,0"/>
-                <Button Content="✏ Düzenle" Command="{Binding EditProductCommand}"
-                        Style="{StaticResource WarningButton}" Width="110" Margin="0,0,8,0"/>
+                <Button Content="🛒 + Yeni Ürün" Command="{Binding AddProductCommand}"
+                        Style="{StaticResource PrimaryButton}" Width="150" Margin="0,0,8,0"/>
+                <Button Content="✎ Düzenle" Command="{Binding EditProductCommand}"
+                        Style="{StaticResource WarningButton}" Width="120" Margin="0,0,8,0"/>
                 <Button Content="🗑 Sil" Command="{Binding DeleteProductCommand}"
                         Style="{StaticResource DangerButton}" Width="90"/>
             </StackPanel>
         </Grid>
 
         <!-- Search / Filter Bar -->
-        <!-- Aktif filtre etiketi (Dashboard'dan gelindiğinde görünür) -->
         <TextBlock Grid.Row="1" Text="{Binding ActiveFilterLabel}" 
-                   Foreground="#60a5fa" FontSize="13" FontWeight="SemiBold"
+                   Foreground="{DynamicResource AccentBlue}" FontSize="13" FontWeight="SemiBold"
                    Margin="0,0,0,8"
                    Visibility="{Binding ActiveFilterLabel, Converter={StaticResource StringToVisibility}}"/>
 
-        <Border Grid.Row="1" Background="#1e293b" CornerRadius="12" Padding="16" Margin="0,28,0,16"
+        <Border Grid.Row="1" Background="#F8FAFC" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="18" Padding="16" Margin="0,28,0,16"
                 Effect="{StaticResource CardShadow}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -62,104 +62,123 @@
             </Grid>
         </Border>
 
-        <!-- DataGrid -->
-        <Border Grid.Row="2" Background="#1e293b" CornerRadius="12" Padding="4"
-                Effect="{StaticResource CardShadow}">
-            <DataGrid ItemsSource="{Binding Products}"
-                      SelectedItem="{Binding SelectedProduct}"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      IsReadOnly="True"
-                      SelectionMode="Single"
-                      HeadersVisibility="Column"
-                      GridLinesVisibility="Horizontal"
-                      HorizontalGridLinesBrush="#334155"
-                      Background="Transparent"
-                      Foreground="#e2e8f0"
-                      BorderThickness="0"
-                      RowBackground="#1e293b"
-                      AlternatingRowBackground="#263548"
-                      FontSize="13">
-
-                <DataGrid.ColumnHeaderStyle>
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#0f172a"/>
-                        <Setter Property="Foreground" Value="#94a3b8"/>
-                        <Setter Property="FontWeight" Value="SemiBold"/>
-                        <Setter Property="FontSize" Value="12"/>
-                        <Setter Property="Padding" Value="12,10"/>
-                        <Setter Property="BorderBrush" Value="#334155"/>
-                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                    </Style>
-                </DataGrid.ColumnHeaderStyle>
-
-                <DataGrid.CellStyle>
-                    <Style TargetType="DataGridCell">
-                        <Setter Property="Padding" Value="12,8"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="DataGridCell">
-                                    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="#334155"/>
-                                <Setter Property="Foreground" Value="#f8fafc"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.CellStyle>
-
-                <DataGrid.RowStyle>
-                    <Style TargetType="DataGridRow">
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#2d3a4d"/>
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="#334155"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.RowStyle>
-
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Ürün Adı" Binding="{Binding Name}" Width="*"/>
-                    <DataGridTextColumn Header="Kategori" Binding="{Binding Category}" Width="120"/>
-                    <DataGridTextColumn Header="Barkod" Binding="{Binding Barcode}" Width="120"/>
-                    <DataGridTextColumn Header="Stok" Binding="{Binding Stock}" Width="70"/>
-                    <DataGridTextColumn Header="Alış ₺" Binding="{Binding PurchasePrice, StringFormat=N2}" Width="90"/>
-                    <DataGridTextColumn Header="Satış ₺" Binding="{Binding SalePrice, StringFormat=N2}" Width="90"/>
-                    <DataGridTextColumn Header="SKT" Binding="{Binding ExpiryDate, StringFormat=dd.MM.yyyy}" Width="100"/>
-                    <DataGridTextColumn Header="Kar ₺" Binding="{Binding Profit, StringFormat=N2}" Width="90"/>
-
-                    <!-- Durum kolonu -->
-                    <DataGridTemplateColumn Header="Durum" Width="120">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding ExpiryStatus, Converter={StaticResource ExpiryStatusText}}"
-                                           Foreground="{Binding ExpiryStatus, Converter={StaticResource ExpiryStatusColor}}"
-                                           FontWeight="SemiBold" FontSize="12"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+        <!-- Header Row for List -->
+        <Border Grid.Row="2" Background="#FEFCE8" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="14" Padding="12,8" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="140"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Ürün" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="1" Text="Kategori" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="2" Text="Barkod" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="3" Text="Stok" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="4" Text="Alış ₺" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="5" Text="Satış ₺" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="6" Text="SKT" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="7" Text="Kar ₺" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="8" Text="Durum" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+            </Grid>
         </Border>
 
+        <!-- Product List -->
+        <ListBox Grid.Row="3" ItemsSource="{Binding Products}"
+                 SelectedItem="{Binding SelectedProduct}"
+                 Background="Transparent" BorderThickness="0"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="0,0,0,12"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Border x:Name="ItemBorder" Background="Transparent" CornerRadius="18">
+                                    <ContentPresenter/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="#E0F2FE"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="#F0F9FF"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="#FEFCE8" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="18" Padding="14"
+                            Effect="{StaticResource CardShadow}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="140"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="#DBEAFE" CornerRadius="10" Padding="6" Margin="0,0,10,0">
+                                    <TextBlock Text="{Binding Category, Converter={StaticResource CategoryEmoji}}" FontSize="14"/>
+                                </Border>
+                                <TextBlock Text="{Binding Name}" Foreground="{StaticResource TextPrimary}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" Text="{Binding Category}" Foreground="{StaticResource TextPrimary}" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Barcode}" Foreground="{StaticResource TextPrimary}" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Stock}" Foreground="{StaticResource TextPrimary}" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="{Binding PurchasePrice, StringFormat=N2}" Foreground="{StaticResource TextPrimary}" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="5" Text="{Binding SalePrice, StringFormat=N2}" Foreground="{StaticResource TextPrimary}" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="6" Text="{Binding ExpiryDate, StringFormat=dd.MM.yyyy}" Foreground="{StaticResource TextPrimary}" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="7" Text="{Binding Profit, StringFormat=N2}" Foreground="{StaticResource TextPrimary}" FontSize="13" VerticalAlignment="Center"/>
+
+                            <StackPanel Grid.Column="8" VerticalAlignment="Center">
+                                <Border x:Name="StatusBadge" Background="#DCFCE7" CornerRadius="20" Padding="10,4">
+                                    <TextBlock Text="{Binding ExpiryStatus, Converter={StaticResource ExpiryStatusText}}"
+                                               Foreground="{Binding ExpiryStatus, Converter={StaticResource ExpiryStatusColor}}"
+                                               FontWeight="SemiBold" FontSize="11"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding ExpiryStatus}" Value="Expired">
+                            <Setter TargetName="StatusBadge" Property="Background" Value="#FCE7F3"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ExpiryStatus}" Value="Warning">
+                            <Setter TargetName="StatusBadge" Property="Background" Value="#FEF3C7"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ExpiryStatus}" Value="Normal">
+                            <Setter TargetName="StatusBadge" Property="Background" Value="#DCFCE7"/>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
         <!-- Inline Form (Add/Edit) -->
-        <Border Grid.Row="3" Background="#1e293b" CornerRadius="12" Padding="20" Margin="0,16,0,0"
+        <Border Grid.Row="4" Style="{StaticResource GlassmorphismPanel}" Padding="20" Margin="0,16,0,0"
                 Effect="{StaticResource CardShadow}"
                 Visibility="{Binding IsFormVisible, Converter={StaticResource BoolToVisibility}}">
             <StackPanel>
                 <TextBlock Text="{Binding FormTitle}" FontSize="18" FontWeight="SemiBold"
-                           Foreground="#f8fafc" Margin="0,0,0,16"/>
+                           Foreground="{StaticResource TextPrimary}" Margin="0,0,0,16"/>
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -176,14 +195,14 @@
 
                     <!-- Row 1 -->
                     <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,12">
-                        <TextBlock Text="Ürün Adı *" Foreground="#94a3b8" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBlock Text="Ürün Adı *" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding FormName, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource ModernTextBox}"/>
                     </StackPanel>
 
-                    <!-- Kategori → ComboBox -->
+                    <!-- Kategori â†’ ComboBox -->
                     <StackPanel Grid.Row="0" Grid.Column="1" Margin="4,0,4,12">
-                        <TextBlock Text="Kategori *" Foreground="#94a3b8" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBlock Text="Kategori *" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
                         <ComboBox ItemsSource="{Binding FormCategories}"
                                   SelectedItem="{Binding FormCategory}"
                                   Style="{StaticResource ModernComboBox}"/>
@@ -191,7 +210,7 @@
 
                     <!-- Barkod + Oluştur butonu -->
                     <StackPanel Grid.Row="0" Grid.Column="2" Margin="4,0,4,12">
-                        <TextBlock Text="Barkod" Foreground="#94a3b8" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBlock Text="Barkod" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -209,24 +228,24 @@
                     </StackPanel>
 
                     <StackPanel Grid.Row="0" Grid.Column="3" Margin="8,0,0,12">
-                        <TextBlock Text="Stok *" Foreground="#94a3b8" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBlock Text="Stok *" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding FormStock, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource ModernTextBox}"/>
                     </StackPanel>
 
                     <!-- Row 2 -->
                     <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,12">
-                        <TextBlock Text="Alış Fiyatı (₺) *" Foreground="#94a3b8" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBlock Text="Alış Fiyatı (₺) *" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding FormPurchasePrice, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource ModernTextBox}"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1" Grid.Column="1" Margin="4,0,4,12">
-                        <TextBlock Text="Satış Fiyatı (₺) *" Foreground="#94a3b8" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBlock Text="Satış Fiyatı (₺) *" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding FormSalePrice, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource ModernTextBox}"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1" Grid.Column="2" Margin="4,0,4,12">
-                        <TextBlock Text="Son Kullanma Tarihi *" Foreground="#94a3b8" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBlock Text="Son Kullanma Tarihi *" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
                         <DatePicker SelectedDate="{Binding FormExpiryDate}"
                                     Style="{StaticResource ModernDatePicker}"/>
                     </StackPanel>

@@ -59,7 +59,7 @@ public partial class App : Application
             Title = "OmniMarket – Giriş",
             Content = loginView,
             Width = 600,
-            Height = 750,
+            Height = 820,
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
             Background = new System.Windows.Media.SolidColorBrush(
                 System.Windows.Media.Color.FromRgb(15, 23, 42)),

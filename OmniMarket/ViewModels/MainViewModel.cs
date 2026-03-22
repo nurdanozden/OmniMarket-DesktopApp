@@ -1,4 +1,4 @@
-using OmniMarket.Helpers;
+﻿using OmniMarket.Helpers;
 using OmniMarket.Models;
 
 namespace OmniMarket.ViewModels;
@@ -31,6 +31,8 @@ public class MainViewModel : BaseViewModel
 
     public RelayCommand ShowDashboardCommand { get; }
     public RelayCommand ShowProductsCommand { get; }
+    public RelayCommand ShowSuppliersCommand { get; }
+    public RelayCommand ShowSettingsCommand { get; }
     public RelayCommand ShowLogsCommand { get; }
     public RelayCommand LogoutCommand { get; }
 
@@ -40,6 +42,8 @@ public class MainViewModel : BaseViewModel
     {
         ShowDashboardCommand = new RelayCommand(NavigateToDashboard);
         ShowProductsCommand = new RelayCommand(NavigateToProducts);
+        ShowSuppliersCommand = new RelayCommand(NavigateToSuppliers);
+        ShowSettingsCommand = new RelayCommand(NavigateToSettings);
         ShowLogsCommand = new RelayCommand(NavigateToLogs);
         LogoutCommand = new RelayCommand(ExecuteLogout);
     }
@@ -79,6 +83,23 @@ public class MainViewModel : BaseViewModel
         vm.Initialize(CurrentMarket.Id);
         CurrentView = vm;
         CurrentViewName = "İşlem Geçmişi";
+    }
+
+    private void NavigateToSuppliers()
+    {
+        var vm = new SupplierListViewModel();
+        vm.Initialize(CurrentMarket.Id);
+        CurrentView = vm;
+        CurrentViewName = "Tedarikçiler";
+    }
+
+    private void NavigateToSettings()
+    {
+        var vm = new SettingsViewModel();
+        vm.MarketNameUpdated += name => CurrentMarket.Name = name;
+        vm.Initialize(CurrentMarket.Id);
+        CurrentView = vm;
+        CurrentViewName = "Ayarlar";
     }
 
     /// <summary>

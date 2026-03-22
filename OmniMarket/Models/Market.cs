@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace OmniMarket.Models;
 
@@ -21,4 +21,8 @@ public class Market
 
     // Navigation property: 1 Market → N Product
     public ICollection<Product> Products { get; set; } = new List<Product>();
+
+    public ICollection<Tedarikci> Tedarikciler { get; set; } = new List<Tedarikci>();
+
+    public MarketProfil? MarketProfil { get; set; }
 }

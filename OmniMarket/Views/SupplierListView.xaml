@@ -1,0 +1,141 @@
+﻿<UserControl x:Class="OmniMarket.Views.SupplierListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Tedarik&#231;iler" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                <TextBlock Text="Tedarik&#231;i bilgilerini y&#246;netin" FontSize="14" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Content="&#x1F69A; Yeni" Command="{Binding AddSupplierCommand}"
+                        Style="{StaticResource PrimaryButton}" Width="110" Margin="0,0,8,0"/>
+                <Button Content="? D&#252;zenle" Command="{Binding EditSupplierCommand}"
+                        Style="{StaticResource WarningButton}" Width="120" Margin="0,0,8,0"/>
+                <Button Content="Sil" Command="{Binding DeleteSupplierCommand}"
+                        Style="{StaticResource DangerButton}" Width="90"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Supplier List -->
+        <ListBox Grid.Row="1" ItemsSource="{Binding Suppliers}" SelectedItem="{Binding SelectedSupplier}"
+                 Background="Transparent" BorderThickness="0" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="0,0,0,12"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Border x:Name="ItemBorder" Background="Transparent" CornerRadius="18">
+                                    <ContentPresenter/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="#E0F2FE"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="#F0F9FF"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="#FEFCE8" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="18" Padding="16"
+                            Effect="{StaticResource CardShadow}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Width="44" Height="44" Background="#DBEAFE" CornerRadius="12" Margin="0,0,12,0">
+                                <TextBlock Text="&#x1F69A;" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Ad}" Foreground="{StaticResource TextPrimary}" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding Kategori}" Foreground="{StaticResource TextMuted}" FontSize="12" Margin="0,2,0,0"/>
+                                <TextBlock Text="{Binding TeslimatGunleri}" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                            </StackPanel>
+
+                            <Border Grid.Column="2" Background="#DCFCE7" CornerRadius="12" Padding="12,6" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding IletisimNo}" Foreground="#065F46" FontWeight="SemiBold"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Inline Form -->
+        <Border Grid.Row="2" Style="{StaticResource GlassmorphismPanel}" Padding="20" Margin="0,16,0,0"
+                Effect="{StaticResource CardShadow}"
+                Visibility="{Binding IsFormVisible, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel>
+                <TextBlock Text="{Binding FormTitle}" FontSize="18" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextPrimary}" Margin="0,0,0,16"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,12">
+                        <TextBlock Text="Tedarik&#231;i Ad&#305;" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormAd}" Style="{StaticResource ModernTextBox}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="4,0,0,12">
+                        <TextBlock Text="&#304;leti&#351;im No" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormIletisimNo}" Style="{StaticResource ModernTextBox}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,12">
+                        <TextBlock Text="Teslimat G&#252;nleri" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormTeslimatGunleri}" Style="{StaticResource ModernTextBox}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="4,0,0,12">
+                        <TextBlock Text="Kategori" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormKategori}" Style="{StaticResource ModernTextBox}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                        <Button Content="&#304;ptal" Command="{Binding CancelFormCommand}"
+                                Style="{StaticResource SecondaryButton}" Width="100" Margin="0,0,8,0"/>
+                        <Button Content="Kaydet" Command="{Binding SaveSupplierCommand}"
+                                Style="{StaticResource SuccessButton}" Width="120"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

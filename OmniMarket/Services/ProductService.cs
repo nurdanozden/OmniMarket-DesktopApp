@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OmniMarket.Data;
 using OmniMarket.Models;
 
@@ -12,7 +12,11 @@ public class ProductService
     public List<Product> GetProducts(int marketId)
     {
         using var db = new AppDbContext();
+
+        NormalizeExpiredProductSuppliers(db, marketId);
+
         return db.Products
+            .Include(p => p.Tedarikci)
             .Where(p => p.MarketId == marketId)
             .OrderBy(p => p.ExpiryDate)
             .ToList();
@@ -25,6 +29,7 @@ public class ProductService
     {
         using var db = new AppDbContext();
         return db.Products
+            .Include(p => p.Tedarikci)
             .Where(p => p.MarketId == marketId &&
                         (p.Name.ToLower().Contains(searchText.ToLower()) ||
                          p.Barcode.Contains(searchText)))
@@ -39,6 +44,7 @@ public class ProductService
     {
         using var db = new AppDbContext();
         return db.Products
+            .Include(p => p.Tedarikci)
             .Where(p => p.MarketId == marketId && p.Category == category)
             .OrderBy(p => p.ExpiryDate)
             .ToList();
@@ -155,5 +161,69 @@ public class ProductService
         }
 
         return alerts;
+    }
+
+    /// <summary>
+    /// SKT'si geçmiş ürünlerde eksik/hatalı tedarikçi atamalarını düzeltir.
+    /// </summary>
+    private static void NormalizeExpiredProductSuppliers(AppDbContext db, int marketId)
+    {
+        var suppliers = db.Tedarikciler
+            .Where(s => s.MarketId == marketId)
+            .ToList();
+
+        if (!suppliers.Any())
+            return;
+
+        var supplierById = suppliers.ToDictionary(s => s.Id);
+        var defaultSupplier = suppliers.FirstOrDefault(s => s.Kategori == "Genel") ?? suppliers.First();
+        var todayUtc = DateTime.UtcNow.Date;
+
+        var expiredProducts = db.Products
+            .Where(p => p.MarketId == marketId && p.ExpiryDate < todayUtc)
+            .ToList();
+
+        var hasChanges = false;
+
+        foreach (var product in expiredProducts)
+        {
+            var expectedSupplierCategory = GetExpectedSupplierCategory(product.Category);
+
+            supplierById.TryGetValue(product.TedarikciId ?? -1, out var currentSupplier);
+
+            var isMissingOrInvalid = product.TedarikciId == null || currentSupplier == null;
+            var isCategoryMismatch = !string.IsNullOrWhiteSpace(expectedSupplierCategory)
+                                     && currentSupplier != null
+                                     && currentSupplier.Kategori != expectedSupplierCategory;
+
+            if (!isMissingOrInvalid && !isCategoryMismatch)
+                continue;
+
+            var preferredSupplier = !string.IsNullOrWhiteSpace(expectedSupplierCategory)
+                ? suppliers.FirstOrDefault(s => s.Kategori == expectedSupplierCategory)
+                : null;
+
+            product.TedarikciId = (preferredSupplier ?? defaultSupplier).Id;
+            hasChanges = true;
+        }
+
+        if (hasChanges)
+            db.SaveChanges();
+    }
+
+    private static string? GetExpectedSupplierCategory(string productCategory)
+    {
+        return productCategory switch
+        {
+            "Süt" => "Sütçü",
+            "Kahvaltılık" => "Sütçü",
+            "Süt & Süt Ürünleri" => "Sütçü",
+            "Meyve & Sebze" => "Manav",
+            "Dondurulmuş Gıda" => "Soğuk Zincir",
+            "Dondurulmuş Gıdalar" => "Soğuk Zincir",
+            "Bakliyat" => "Bakliyatçı",
+            "Un & Bakliyat" => "Bakliyatçı",
+            _ => null
+        };
     }
 }
