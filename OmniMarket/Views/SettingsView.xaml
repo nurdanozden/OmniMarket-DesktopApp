@@ -49,7 +49,7 @@
             <!-- Header -->
             <StackPanel Grid.Row="0" Margin="0,0,0,20">
                 <TextBlock Text="Ayarlar &amp; Profil 🌸" FontSize="32" FontWeight="Heavy" FontFamily="Comic Sans MS, Segoe UI Print, Segoe UI" Foreground="#EC4899"/>
-                <TextBlock Text="Marketinizin sihirli ayarlarını buradan yönetin ✨" FontSize="15" Foreground="#9CA3AF" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                <TextBlock Text="Marketinizin ayarlarını buradan yönetin ✨" FontSize="15" Foreground="#9CA3AF" FontWeight="SemiBold" Margin="0,4,0,0"/>
             </StackPanel>
 
             <!-- Profile Card -->
@@ -67,7 +67,7 @@
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                         <TextBlock Text="{Binding MarketAdi}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                        <TextBlock Text="Sihirli Market Profili ✨" FontSize="13" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+                        <TextBlock Text=" Market Profili ✨" FontSize="13" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -122,7 +122,7 @@
                         <!-- Tema Seçici Kaldırıldı -->
 
                         <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="✨ Büyüyü Kaydet ✨" Command="{Binding SaveCommand}" Style="{StaticResource CuteButton}" Padding="20,12">
+                            <Button Content="✨ Kaydet ✨" Command="{Binding SaveCommand}" Style="{StaticResource CuteButton}" Padding="20,12">
                                 <Button.Effect>
                                     <DropShadowEffect BlurRadius="15" Color="#F472B6" ShadowDepth="4" Opacity="0.4"/>
                                 </Button.Effect>

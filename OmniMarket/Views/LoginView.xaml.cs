@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace OmniMarket.Views;
@@ -14,6 +14,9 @@ public partial class LoginView : UserControl
         {
             if (DataContext is ViewModels.LoginViewModel vm)
                 vm.Password = PasswordBox.Password;
+                
+            PasswordPlaceholder.Visibility = string.IsNullOrEmpty(PasswordBox.Password) 
+                ? Visibility.Visible : Visibility.Collapsed;
         };
 
         // Test Giriş: PasswordBox'ı otomatik doldur
@@ -26,6 +29,9 @@ public partial class LoginView : UserControl
                     PasswordBox.Password = password;
                 };
             }
+            
+            PasswordPlaceholder.Visibility = string.IsNullOrEmpty(PasswordBox.Password) 
+                ? Visibility.Visible : Visibility.Collapsed;
         };
     }
 }

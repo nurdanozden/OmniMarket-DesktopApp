@@ -48,9 +48,9 @@
                         <DropShadowEffect BlurRadius="15" Color="#F472B6" ShadowDepth="4" Opacity="0.4"/>
                     </Button.Effect>
                 </Button>
-                <Button Content="? D&#252;zenle" Command="{Binding EditSupplierCommand}"
+                <Button Content="✎ Düzenle" Command="{Binding EditSupplierCommand}"
                         Style="{StaticResource WarningButton}" Width="120" Margin="0,0,8,0"/>
-                <Button Content="Sil" Command="{Binding DeleteSupplierCommand}"
+                <Button Content="🗑 Sil" Command="{Binding DeleteSupplierCommand}"
                         Style="{StaticResource DangerButton}" Width="90"/>
             </StackPanel>
         </Grid>

@@ -108,7 +108,7 @@
                     <TextBlock Text="Hoş Geldiniz! 🌸" FontSize="36" FontWeight="Heavy" 
                                FontFamily="Comic Sans MS, Segoe UI Print, Segoe UI" 
                                Foreground="#EC4899" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                    <TextBlock Text="OmniMarket Kasaba Şubesi" FontSize="16" 
+                    <TextBlock Text="OmniMarket Şubesi" FontSize="16" 
                                Foreground="#9CA3AF" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,40"/>
 
                     <!-- Kullanıcı Adı -->
@@ -120,10 +120,16 @@
 
                     <!-- Şifre -->
                     <TextBlock Text="Şifre 🔑" Foreground="#F472B6" FontSize="14" FontWeight="Bold" Margin="0,0,0,8"/>
-                    <PasswordBox x:Name="PasswordBox"
-                                 Style="{StaticResource ModernPasswordBox}" 
-                                 Foreground="#BE185D" Background="#FFF1F2" BorderBrush="#FBCFE8"
-                                 Margin="0,0,0,12" Padding="15,12" FontSize="14"/>
+                    <Grid Margin="0,0,0,24">
+                        <PasswordBox x:Name="PasswordBox"
+                                     Style="{StaticResource ModernPasswordBox}" 
+                                     Foreground="#BE185D" Background="#FFF1F2" BorderBrush="#FBCFE8"
+                                     Padding="15,12" FontSize="14"/>
+                        <TextBlock x:Name="PasswordPlaceholder" Text="Şifrenizi girin" 
+                                   Foreground="#9CA3AF" FontSize="12" FontFamily="Poppins"
+                                   VerticalAlignment="Center" Margin="16,0,0,0"
+                                   IsHitTestVisible="False"/>
+                    </Grid>
 
                     <!-- Hata Mesajı -->
                     <Border Background="#FEE2E2" CornerRadius="12" Padding="12" Margin="0,0,0,20"
@@ -133,7 +139,7 @@
                     </Border>
 
                     <!-- Giriş Butonu -->
-                    <Button Content="✨ Büyülü Giriş ✨" Command="{Binding LoginCommand}"
+                    <Button Content="✨ Giriş ✨" Command="{Binding LoginCommand}"
                             Style="{StaticResource CuteButton}" Margin="0,10,0,24">
                         <Button.Effect>
                             <DropShadowEffect BlurRadius="20" Color="#F472B6" ShadowDepth="6" Opacity="0.5"/>
@@ -142,7 +148,7 @@
 
                     <!-- Kayıt Linki -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,28">
-                        <TextBlock Text="Kasabaya henüz katılmadın mı? " Foreground="#9CA3AF" FontSize="14" FontWeight="Medium"/>
+                        <TextBlock Text="Bize henüz katılmadın mı? " Foreground="#9CA3AF" FontSize="14" FontWeight="Medium"/>
                         <TextBlock FontSize="14" FontWeight="Bold">
                             <Hyperlink Command="{Binding GoToRegisterCommand}"
                                        Foreground="#EC4899" TextDecorations="Underline">
@@ -164,7 +170,7 @@
                     </Grid>
 
                     <!-- Test Giriş Butonu -->
-                    <Button Content="🏪 Seçilmiş Kişi (NUR MARKET) 🏪"
+                    <Button Content="🏪 Seçilmiş Giriş (NUR MARKET) 🏪"
                             Command="{Binding TestLoginCommand}"
                             ToolTip="Demo verilerle hızlı giriş yap"
                             Style="{StaticResource CuteButton}" Background="#A78BFA"

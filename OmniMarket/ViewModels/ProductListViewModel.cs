@@ -112,7 +112,7 @@ public class ProductListViewModel : BaseViewModel
         set => SetProperty(ref _isEditing, value);
     }
 
-    public string FormTitle => IsEditing ? "Ürün Düzenle" : "Yeni Ürün Ekle";
+    public string FormTitle => IsEditing ? "✎ Ürün Düzenle" : "🛒 Yeni Ürün Ekle";
 
     #endregion
 

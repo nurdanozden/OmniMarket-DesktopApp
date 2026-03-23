@@ -73,7 +73,7 @@
             <StackPanel Grid.Row="0" Margin="0,0,0,24">
                 <TextBlock Text="Dashboard 🌸" FontSize="36" FontWeight="Heavy" 
                            FontFamily="Comic Sans MS, Segoe UI Print, Segoe UI" Foreground="#EC4899"/>
-                <TextBlock Text="Market durumunuza eğlenceli genel bakış ✨" FontSize="15" Foreground="#9CA3AF" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                <TextBlock Text="Market durumunuza genel bakış ✨" FontSize="15" Foreground="#9CA3AF" FontWeight="SemiBold" Margin="0,4,0,0"/>
             </StackPanel>
 
             <!-- Stats Cards -->

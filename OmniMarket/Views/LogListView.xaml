@@ -158,7 +158,7 @@
                     
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="İşlem Geçmişi 🌸" FontSize="32" FontWeight="Heavy" FontFamily="Comic Sans MS, Segoe UI Print, Segoe UI" Foreground="#EC4899"/>
-                        <TextBlock Text="Sistem üzerindeki tüm aktiviteleri sihirli günlüğünüzden takip edin ✨" FontSize="15" Foreground="#9CA3AF" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                        <TextBlock Text="Sistem üzerindeki tüm aktiviteleri günlüğünüzden takip edin ✨" FontSize="15" Foreground="#9CA3AF" FontWeight="SemiBold" Margin="0,4,0,0"/>
                     </StackPanel>
 
                 <!-- Arama Kutusu (Live Search) -->
