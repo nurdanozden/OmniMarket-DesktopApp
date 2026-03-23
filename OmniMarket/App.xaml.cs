@@ -40,6 +40,7 @@ public partial class App : Application
             catch { /* Hata görmezden geliniyor (Zaten varsa vs.) */ }
 
             DataSeeder.Seed(db);
+            DataSeeder.UpdateAllProductExpiryDates(db);
         }
 
         // Login ekranını göster

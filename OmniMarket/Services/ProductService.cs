@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OmniMarket.Data;
 using OmniMarket.Models;
 
@@ -15,26 +15,29 @@ public class ProductService
 
         NormalizeExpiredProductSuppliers(db, marketId);
 
-        return db.Products
+        var rawResults = db.Products
             .Include(p => p.Tedarikci)
             .Where(p => p.MarketId == marketId)
-            .OrderBy(p => p.ExpiryDate)
             .ToList();
+
+        return GroupProducts(rawResults);
     }
 
     /// <summary>
-    /// Ürün adına göre arama yapar.
+    /// Ürün adına göre arama yapar (Aynı isimli ürünleri gruplar).
     /// </summary>
     public List<Product> SearchProducts(int marketId, string searchText)
     {
         using var db = new AppDbContext();
-        return db.Products
+        
+        var rawResults = db.Products
             .Include(p => p.Tedarikci)
             .Where(p => p.MarketId == marketId &&
                         (p.Name.ToLower().Contains(searchText.ToLower()) ||
                          p.Barcode.Contains(searchText)))
-            .OrderBy(p => p.ExpiryDate)
             .ToList();
+
+        return GroupProducts(rawResults);
     }
 
     /// <summary>
@@ -43,11 +46,12 @@ public class ProductService
     public List<Product> FilterByCategory(int marketId, string category)
     {
         using var db = new AppDbContext();
-        return db.Products
+        var rawResults = db.Products
             .Include(p => p.Tedarikci)
             .Where(p => p.MarketId == marketId && p.Category == category)
-            .OrderBy(p => p.ExpiryDate)
             .ToList();
+
+        return GroupProducts(rawResults);
     }
 
     /// <summary>
@@ -161,6 +165,36 @@ public class ProductService
         }
 
         return alerts;
+    }
+
+    /// <summary>
+    /// Aynı isimdeki ürünleri gruplayarak stoklarını toplar ve tek satır halinde gösterir.
+    /// SKT'si en yakın olanı baz alarak durumu belirler (Order by ExpiryDate Ascending).
+    /// </summary>
+    private List<Product> GroupProducts(List<Product> rawResults)
+    {
+        return rawResults
+            .GroupBy(p => p.Name)
+            .Select(g => 
+            {
+                var first = g.OrderBy(p => p.ExpiryDate).First();
+                return new Product
+                {
+                    Id = first.Id,
+                    Name = g.Key,
+                    Category = first.Category,
+                    Barcode = first.Barcode,
+                    Stock = g.Sum(p => p.Stock),
+                    PurchasePrice = first.PurchasePrice,
+                    SalePrice = first.SalePrice,
+                    ExpiryDate = first.ExpiryDate,
+                    MarketId = first.MarketId,
+                    TedarikciId = first.TedarikciId,
+                    Tedarikci = first.Tedarikci
+                };
+            })
+            .OrderBy(p => p.ExpiryDate)
+            .ToList();
     }
 
     /// <summary>

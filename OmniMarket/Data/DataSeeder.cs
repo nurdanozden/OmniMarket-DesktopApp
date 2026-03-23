@@ -1,10 +1,50 @@
-﻿using OmniMarket.Models;
+using OmniMarket.Models;
 
 namespace OmniMarket.Data;
 
 public static class DataSeeder
 {
     private static readonly Random _rng = new();
+
+    public static void UpdateAllProductExpiryDates(AppDbContext context)
+    {
+        var products = context.Products.ToList();
+        if (!products.Any()) return;
+
+        // Sistemdeki ürünleri Kategori'ye göre grupla
+        var groupedByCategory = products.GroupBy(p => p.Category);
+        
+        foreach (var categoryGroup in groupedByCategory)
+        {
+            // Kategorideki benzersiz ürün isimlerini karıştırarak %40'ını seç
+            var groupedByName = categoryGroup.GroupBy(p => p.Name).OrderBy(x => _rng.Next()).ToList();
+            int pastCount = (int)(groupedByName.Count * 0.4); 
+            
+            for(int i = 0; i < groupedByName.Count; i++)
+            {
+                var nameGroup = groupedByName[i];
+                DateTime newExpiryDate;
+
+                if (i < pastCount)
+                {
+                    // %40 geçmiş (-1 ila -30 gün önce arası)
+                    newExpiryDate = DateTime.SpecifyKind(DateTime.Today.AddDays(-_rng.Next(1, 31)), DateTimeKind.Utc);
+                }
+                else
+                {
+                    // %60 gelecek (90 ila 180 gün sonrasi arası -> 3-6 ay)
+                    newExpiryDate = DateTime.SpecifyKind(DateTime.Today.AddDays(_rng.Next(90, 181)), DateTimeKind.Utc);
+                }
+
+                // Aynı isimdeki tüm ürün kayıtlarına aynı SKT'yi ata (UI grubunda karışıklığı önler)
+                foreach(var p in nameGroup)
+                {
+                    p.ExpiryDate = newExpiryDate;
+                }
+            }
+        }
+        context.SaveChanges();
+    }
 
     public static void Seed(AppDbContext context)
     {
