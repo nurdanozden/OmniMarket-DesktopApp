@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
 using OmniMarket.Data;
 using OmniMarket.Models;
 
@@ -28,16 +29,24 @@ public class ProductService
     /// </summary>
     public List<Product> SearchProducts(int marketId, string searchText)
     {
-        using var db = new AppDbContext();
-        
-        var rawResults = db.Products
-            .Include(p => p.Tedarikci)
-            .Where(p => p.MarketId == marketId &&
-                        (p.Name.ToLower().Contains(searchText.ToLower()) ||
-                         p.Barcode.Contains(searchText)))
-            .ToList();
+        try
+        {
+            using var db = new AppDbContext();
+            
+            var rawResults = db.Products
+                .Include(p => p.Tedarikci)
+                .Where(p => p.MarketId == marketId &&
+                            ((p.Name != null && p.Name.ToLower().Contains(searchText.ToLower())) ||
+                             (p.Barcode != null && p.Barcode.Contains(searchText))))
+                .ToList();
 
-        return GroupProducts(rawResults);
+            return GroupProducts(rawResults);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ürün arama DB hatası: {ex.Message}", "Veritabanı Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+            return new List<Product>();
+        }
     }
 
     /// <summary>
@@ -45,13 +54,21 @@ public class ProductService
     /// </summary>
     public List<Product> FilterByCategory(int marketId, string category)
     {
-        using var db = new AppDbContext();
-        var rawResults = db.Products
-            .Include(p => p.Tedarikci)
-            .Where(p => p.MarketId == marketId && p.Category == category)
-            .ToList();
+        try
+        {
+            using var db = new AppDbContext();
+            var rawResults = db.Products
+                .Include(p => p.Tedarikci)
+                .Where(p => p.MarketId == marketId && p.Category == category)
+                .ToList();
 
-        return GroupProducts(rawResults);
+            return GroupProducts(rawResults);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Kategori filtreleme DB hatası: {ex.Message}", "Veritabanı Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+            return new List<Product>();
+        }
     }
 
     /// <summary>
@@ -59,13 +76,21 @@ public class ProductService
     /// </summary>
     public List<string> GetCategories(int marketId)
     {
-        using var db = new AppDbContext();
-        return db.Products
-            .Where(p => p.MarketId == marketId)
-            .Select(p => p.Category)
-            .Distinct()
-            .OrderBy(c => c)
-            .ToList();
+        try
+        {
+            using var db = new AppDbContext();
+            return db.Products
+                .Where(p => p.MarketId == marketId && p.Category != null)
+                .Select(p => p.Category!)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Kategoriler çekilirken DB hatası: {ex.Message}", "Veritabanı Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+            return new List<string>();
+        }
     }
 
     /// <summary>
@@ -145,6 +170,46 @@ public class ProductService
     }
 
     /// <summary>
+    /// SKT yaklaşan ürünlere (bugünden 1-7 gün içinde) kampanya indirimi uygular.
+    /// </summary>
+    public int ApplyCampaign(int marketId, decimal discountRate)
+    {
+        using var db = new AppDbContext();
+        var today = DateTime.Today;
+        var expiring = db.Products
+            .Where(p => p.MarketId == marketId
+                     && p.ExpiryDate >= today
+                     && (p.ExpiryDate - today).TotalDays <= 7)
+            .ToList();
+
+        foreach (var p in expiring)
+            p.DiscountRate = discountRate;
+
+        db.SaveChanges();
+        return expiring.Count;
+    }
+
+    /// <summary>
+    /// SKT yaklaşan ürünlere (bugünden 1-7 gün içinde) iade talebi oluşturur.
+    /// </summary>
+    public int RequestReturn(int marketId)
+    {
+        using var db = new AppDbContext();
+        var today = DateTime.Today;
+        var expiring = db.Products
+            .Where(p => p.MarketId == marketId
+                     && p.ExpiryDate >= today
+                     && (p.ExpiryDate - today).TotalDays <= 7)
+            .ToList();
+
+        foreach (var p in expiring)
+            p.ReturnRequested = true;
+
+        db.SaveChanges();
+        return expiring.Count;
+    }
+
+    /// <summary>
     /// Uyarı listesini getirir.
     /// </summary>
     public List<(string Message, string Type)> GetAlerts(int marketId)
@@ -173,28 +238,43 @@ public class ProductService
     /// </summary>
     private List<Product> GroupProducts(List<Product> rawResults)
     {
-        return rawResults
-            .GroupBy(p => p.Name)
-            .Select(g => 
-            {
-                var first = g.OrderBy(p => p.ExpiryDate).First();
-                return new Product
+        if (rawResults == null || !rawResults.Any()) return new List<Product>();
+
+        try
+        {
+            return rawResults
+                .GroupBy(p => p.Name)
+                .Select(g => 
                 {
-                    Id = first.Id,
-                    Name = g.Key,
-                    Category = first.Category,
-                    Barcode = first.Barcode,
-                    Stock = g.Sum(p => p.Stock),
-                    PurchasePrice = first.PurchasePrice,
-                    SalePrice = first.SalePrice,
-                    ExpiryDate = first.ExpiryDate,
-                    MarketId = first.MarketId,
-                    TedarikciId = first.TedarikciId,
-                    Tedarikci = first.Tedarikci
-                };
-            })
-            .OrderBy(p => p.ExpiryDate)
-            .ToList();
+                    var first = g.OrderBy(p => p.ExpiryDate).FirstOrDefault();
+                    if (first == null) return null; // Olmaması gerek ama null reference fail-safe
+
+                    return new Product
+                    {
+                        Id = first.Id,
+                        Name = g.Key ?? "Bilinmiyor",
+                        Category = first.Category ?? "",
+                        Barcode = first.Barcode ?? "",
+                        Stock = g.Sum(p => p.Stock),
+                        PurchasePrice = first.PurchasePrice,
+                        SalePrice = first.SalePrice,
+                        ExpiryDate = first.ExpiryDate,
+                        MarketId = first.MarketId,
+                        TedarikciId = first.TedarikciId,
+                        Tedarikci = first.Tedarikci // Null olabilir, bu normal. UI'da null check atıldı.
+                    };
+                })
+                .Where(p => p != null)
+                .Select(p => p!) // Not null assertion
+                .OrderBy(p => p.ExpiryDate)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Product Service Grouping Hatası: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}",
+                "Crtical Exception in Grouping", MessageBoxButton.OK, MessageBoxImage.Error);
+            return new List<Product>(); // Boş dön, patlama
+        }
     }
 
     /// <summary>

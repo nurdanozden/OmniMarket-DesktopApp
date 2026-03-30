@@ -13,31 +13,43 @@ public static class DataSeeder
 
         // Sistemdeki ürünleri Kategori'ye göre grupla
         var groupedByCategory = products.GroupBy(p => p.Category);
-        
+
         foreach (var categoryGroup in groupedByCategory)
         {
-            // Kategorideki benzersiz ürün isimlerini karıştırarak %40'ını seç
+            // Kategorideki benzersiz ürün isimlerini karıştır
             var groupedByName = categoryGroup.GroupBy(p => p.Name).OrderBy(x => _rng.Next()).ToList();
-            int pastCount = (int)(groupedByName.Count * 0.4); 
-            
-            for(int i = 0; i < groupedByName.Count; i++)
+            int total = groupedByName.Count;
+
+            // Dağılım: %25 geçmiş | %35 yaklaşan (3-7 gün) | %40 normal
+            int pastCount     = (int)Math.Ceiling(total * 0.25);
+            int approachCount = (int)Math.Ceiling(total * 0.35);
+
+            for (int i = 0; i < total; i++)
             {
                 var nameGroup = groupedByName[i];
                 DateTime newExpiryDate;
 
                 if (i < pastCount)
                 {
-                    // %40 geçmiş (-1 ila -30 gün önce arası)
-                    newExpiryDate = DateTime.SpecifyKind(DateTime.Today.AddDays(-_rng.Next(1, 31)), DateTimeKind.Utc);
+                    // 🔴 SKT geçmiş (-1 ila -30 gün)
+                    newExpiryDate = DateTime.SpecifyKind(
+                        DateTime.Today.AddDays(-_rng.Next(1, 31)), DateTimeKind.Utc);
+                }
+                else if (i < pastCount + approachCount)
+                {
+                    // 🟡 SKT yaklaşıyor (bugün + 3 ila 7 gün)
+                    newExpiryDate = DateTime.SpecifyKind(
+                        DateTime.Today.AddDays(_rng.Next(3, 8)), DateTimeKind.Utc);
                 }
                 else
                 {
-                    // %60 gelecek (90 ila 180 gün sonrasi arası -> 3-6 ay)
-                    newExpiryDate = DateTime.SpecifyKind(DateTime.Today.AddDays(_rng.Next(90, 181)), DateTimeKind.Utc);
+                    // 🟢 Normal (bugün + 30 ila 180 gün)
+                    newExpiryDate = DateTime.SpecifyKind(
+                        DateTime.Today.AddDays(_rng.Next(30, 181)), DateTimeKind.Utc);
                 }
 
-                // Aynı isimdeki tüm ürün kayıtlarına aynı SKT'yi ata (UI grubunda karışıklığı önler)
-                foreach(var p in nameGroup)
+                // Aynı isimdeki tüm ürün kayıtlarına aynı SKT'yi ata
+                foreach (var p in nameGroup)
                 {
                     p.ExpiryDate = newExpiryDate;
                 }
@@ -45,6 +57,45 @@ public static class DataSeeder
         }
         context.SaveChanges();
     }
+
+    public static void FixEmptySupplierIds(AppDbContext context)
+    {
+        var productsWithoutSupplier = context.Products.Where(p => p.TedarikciId == null).ToList();
+        if (!productsWithoutSupplier.Any()) return;
+
+        var markets = context.Markets.ToList();
+        foreach (var market in markets)
+        {
+            var marketSuppliers = context.Tedarikciler.Where(t => t.MarketId == market.Id).ToList();
+            var mProducts = productsWithoutSupplier.Where(p => p.MarketId == market.Id).ToList();
+
+            if (!mProducts.Any()) continue;
+
+            if (!marketSuppliers.Any())
+            {
+                // Create a default supplier if none exists at all
+                var defaultSupplier = new Tedarikci
+                {
+                    Ad = "Genel Tedarikçi",
+                    IletisimNo = "0555 000 00 00",
+                    TeslimatGunleri = "Her gün",
+                    Kategori = "Genel",
+                    MarketId = market.Id
+                };
+                context.Tedarikciler.Add(defaultSupplier);
+                context.SaveChanges();
+                marketSuppliers.Add(defaultSupplier);
+            }
+
+            // Assign products to a random supplier or default
+            foreach (var p in mProducts)
+            {
+                p.TedarikciId = marketSuppliers[_rng.Next(marketSuppliers.Count)].Id;
+            }
+        }
+        context.SaveChanges();
+    }
+
 
     public static void Seed(AppDbContext context)
     {
@@ -111,7 +162,7 @@ public static class DataSeeder
         }
 
         // ─── Loglar ───
-        if (context.Logs.Count() < 10)
+        if (context.Logs.Count() < 20)
         {
             var adminMarket = context.Markets.FirstOrDefault(m => m.Username == "nur");
             if (adminMarket != null)
@@ -119,20 +170,78 @@ public static class DataSeeder
                 var now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
                 var logs = new List<Log>
                 {
-                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme, Detay = "Sistem güncellemeleri yapıldı.", Tarih = now.AddDays(-2) },
-                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Login, Detay = "Sisteme ilk yetkili girişi sağlandı.", Tarih = now.AddMinutes(-120) },
-                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme, Detay = "'1kg Tam Buğday Unu' adlı yeni ürün stoğa eklendi (Stok: 50).", Tarih = now.AddMinutes(-115) },
-                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme, Detay = "'1L Günlük Süt' adlı yeni ürün stoğa eklendi (Stok: 120).", Tarih = now.AddMinutes(-110) },
-                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Guncelleme, Detay = "'1kg Tam Buğday Unu' ürünü güncellendi (Eski Stok: 50 -> Yeni Stok: 40).", Tarih = now.AddMinutes(-85) },
-                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Silme, Detay = "'Hatalı Ürün Kaydı' adlı ürün sistemden tamamen silindi.", Tarih = now.AddMinutes(-30) },
-                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Guncelleme, Detay = "Toplu stok güncellemesi yapıldı.", Tarih = now.AddMinutes(-15) },
-                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Login, Detay = "Sisteme giriş yapıldı (Oturum Açıldı).", Tarih = now.AddMinutes(-2) }
+                    // Login kayıtları
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Login,
+                        Detay = "Sisteme giriş yapıldı.", Tarih = now.AddDays(-7) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "demo", IslemTipi = LogType.Login,
+                        Detay = "Demo hesabı ile sisteme giriş yapıldı.", Tarih = now.AddDays(-5) },
+
+                    // Ürün ekleme
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme,
+                        Detay = "'Günlük Süt 1L' ürünü sisteme eklendi.",
+                        YeniDeger = "Stok: 120 | Alış: 18,50₺ | Satış: 24,00₺", Tarih = now.AddDays(-6).AddHours(9) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme,
+                        Detay = "'Çaykur Rize Turist Çay 500g' ürünü sisteme eklendi.",
+                        YeniDeger = "Stok: 48 | Alış: 65,00₺ | Satış: 82,00₺", Tarih = now.AddDays(-6).AddHours(10) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme,
+                        Detay = "'Sütaş Yoğurt 2kg' ürünü sisteme eklendi.",
+                        YeniDeger = "Stok: 35 | Alış: 45,00₺ | Satış: 58,00₺", Tarih = now.AddDays(-5).AddHours(8) },
+
+                    // Fiyat güncellemeleri
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.FiyatGuncelleme,
+                        Detay = "'Ekmek (200g)' ürününün satış fiyatı güncellendi.",
+                        EskiDeger = "Satış Fiyatı: 8,00₺", YeniDeger = "Satış Fiyatı: 9,50₺", Tarih = now.AddDays(-4).AddHours(11) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.FiyatGuncelleme,
+                        Detay = "'5L Su' ürününün alış ve satış fiyatı güncellendi.",
+                        EskiDeger = "Alış: 12,00₺ | Satış: 16,00₺", YeniDeger = "Alış: 14,50₺ | Satış: 19,00₺", Tarih = now.AddDays(-3).AddHours(14) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.FiyatGuncelleme,
+                        Detay = "SKT yaklaşan 12 ürüne %15 kampanya indirimi satış fiyatına yansıtıldı.",
+                        EskiDeger = "İndirim: %0", YeniDeger = "İndirim: %15", Tarih = now.AddDays(-2).AddHours(9) },
+
+                    // Stok çıkış kayıtları
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.StokCikisi,
+                        Detay = "'Yumurta (15'li)' satışı nedeniyle stok güncellendi.",
+                        EskiDeger = "Stok: 24", YeniDeger = "Stok: 18", Tarih = now.AddDays(-4).AddHours(16) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.StokCikisi,
+                        Detay = "'Günlük Süt 1L' satışı nedeniyle stok güncellendi.",
+                        EskiDeger = "Stok: 120", YeniDeger = "Stok: 97", Tarih = now.AddDays(-3).AddHours(12) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.StokCikisi,
+                        Detay = "'Ekmek (200g)' satışı nedeniyle stok güncellendi.",
+                        EskiDeger = "Stok: 85", YeniDeger = "Stok: 70", Tarih = now.AddDays(-1).AddHours(10) },
+
+                    // Kampanya
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Kampanya,
+                        Detay = "SKT yaklaşan 8 ürüne kampanya başlatıldı.",
+                        EskiDeger = "İndirim: Yok", YeniDeger = "İndirim: %20 | Hedef: SKT < 7 Gün", Tarih = now.AddDays(-2).AddHours(15) },
+
+                    // İade talebi
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.UrunIade,
+                        Detay = "'Sütaş Yoğurt 2kg' tedarikçiye iade listesine alındı.",
+                        EskiDeger = "İade Durumu: Hayır", YeniDeger = "İade Durumu: Evet (SKT: Geçmiş)", Tarih = now.AddDays(-1).AddHours(17) },
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.UrunIade,
+                        Detay = "3 ürün için tedarikçi iade talebi oluşturuldu.",
+                        EskiDeger = "İade Talebi: Yok", YeniDeger = "İade Talebi: Oluşturuldu (Tedarikçi: Özden Süt)", Tarih = now.AddHours(-3) },
+
+                    // Güncelleme
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Guncelleme,
+                        Detay = "'Çaykur Rize Turist Çay 500g' stok miktarı güncellendi (sayım sonrası).",
+                        EskiDeger = "Stok: 48", YeniDeger = "Stok: 52", Tarih = now.AddDays(-1).AddHours(9) },
+
+                    // Silme
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Silme,
+                        Detay = "'Test Ürünü' kaydı sistemden silindi (hatalı giriş).",
+                        EskiDeger = "Ürün: Test Ürünü | Stok: 0", Tarih = now.AddDays(-3).AddHours(13) },
+
+                    // Güncel login
+                    new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Login,
+                        Detay = "Sisteme giriş yapıldı.", Tarih = now.AddHours(-1) },
                 };
                 context.Logs.AddRange(logs);
                 context.SaveChanges();
             }
         }
     }
+
 
     private static void GenerateProducts(AppDbContext context, int marketId,
         List<(string Name, string Category)> templates, int count, List<Tedarikci> suppliers, Tedarikci defaultSupplier)

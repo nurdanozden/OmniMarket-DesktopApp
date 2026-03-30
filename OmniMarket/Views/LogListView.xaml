@@ -1,178 +1,302 @@
 <UserControl x:Class="OmniMarket.Views.LogListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:vm="clr-namespace:OmniMarket.ViewModels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:models="clr-namespace:OmniMarket.Models"
-             mc:Ignorable="d" 
-             d:DesignHeight="750" d:DesignWidth="960"
+             mc:Ignorable="d" d:DesignHeight="750" d:DesignWidth="960"
              Background="Transparent">
-    
-    <UserControl.Resources>
-        <!-- Arama kutusu stili (Pastel Mavi) -->
-        <Style x:Key="SearchTextBox" TargetType="TextBox" BasedOn="{StaticResource ModernTextBox}">
-            <Style.Triggers>
-                <Trigger Property="IsKeyboardFocused" Value="True">
-                    <Setter Property="BorderBrush" Value="#3B82F6"/>
-                    <Setter Property="Effect" Value="{StaticResource GlowBlue}"/>
-                    <Setter Property="Background" Value="#F8FAFC"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
 
-        <!-- Timeline Node Template -->
-        <DataTemplate x:Key="LogItemTemplate" DataType="{x:Type models:Log}">
-            <Grid Margin="0,0,0,24">
-                <Grid.ColumnDefinitions>
-                    <!-- Sol: Zaman Çizgisi ve Nokta -->
-                    <ColumnDefinition Width="60"/>
-                    <!-- Sağ: İçerik Kartı -->
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Dikey Çizgi ve Nokta -->
-                <Grid Grid.Column="0">
-                    <Rectangle Width="3" Fill="#FCD34D" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,20,0,-24"/>
-                    
-                    <!-- Parlayan Daire (Renk DataTrigger ile değişecek) -->
-                    <Border x:Name="NodeCircle" Width="18" Height="18" CornerRadius="9" 
-                            Background="#10B981" BorderBrush="#FFFFFF" BorderThickness="2"
-                            HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"
-                            Effect="{StaticResource GlowGreen}"/>
-                </Grid>
-
-                <!-- İçerik Kartı (Glassmorphism) -->
-                <Border Grid.Column="1" Style="{StaticResource GlassmorphismPanel}" Padding="20" Margin="0,0,24,0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- İşlem İkonu -->
-                        <Border x:Name="TypeIcon" Background="#DBEAFE" CornerRadius="10" Padding="8" Margin="0,0,12,0" VerticalAlignment="Center">
-                            <TextBlock x:Name="TypeIconText" Text="🏷" FontSize="14"/>
-                        </Border>
-
-                        <!-- İşlem Tipi Başlığı ve Kullanıcı -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0" MinWidth="120">
-                            <TextBlock Text="{Binding IslemTipi}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                            <TextBlock Text="{Binding KullaniciAdi}" FontSize="12" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
-                        </StackPanel>
-
-                        <!-- Detay -->
-                        <TextBlock Grid.Column="2" Text="{Binding Detay}" FontSize="13" Foreground="{StaticResource TextPrimary}" 
-                                   TextWrapping="Wrap" VerticalAlignment="Center"/>
-
-                        <!-- Tarih -->
-                        <TextBlock Grid.Column="3" Text="{Binding Tarih, StringFormat='dd MMM yyyy HH:mm'}" 
-                                   FontSize="12" Foreground="{StaticResource TextMuted}" VerticalAlignment="Top" HorizontalAlignment="Right"/>
-                    </Grid>
-                </Border>
-
-                <!-- Kayarak gelme animasyonu -->
-                <Grid.Triggers>
-                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                    From="0,50,0,0" To="0,0,0,24" Duration="0:0:0.6">
-                                    <ThicknessAnimation.EasingFunction>
-                                        <CubicEase EasingMode="EaseOut"/>
-                                    </ThicknessAnimation.EasingFunction>
-                                </ThicknessAnimation>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                 From="0" To="1" Duration="0:0:0.6"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Grid.Triggers>
-            </Grid>
-
-            <!-- DataTriggers to change the glowing node color based on LogType -->
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding IslemTipi}" Value="Ekleme">
-                    <Setter TargetName="NodeCircle" Property="Background" Value="#10B981"/>
-                    <Setter TargetName="NodeCircle" Property="Effect" Value="{StaticResource GlowGreen}"/>
-                    <Setter TargetName="TypeIcon" Property="Background" Value="#DCFCE7"/>
-                    <Setter TargetName="TypeIconText" Property="Text" Value="➕"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IslemTipi}" Value="Silme">
-                    <Setter TargetName="NodeCircle" Property="Background" Value="#F472B6"/>
-                    <Setter TargetName="NodeCircle" Property="Effect" Value="{StaticResource GlowRed}"/>
-                    <Setter TargetName="TypeIcon" Property="Background" Value="#FCE7F3"/>
-                    <Setter TargetName="TypeIconText" Property="Text" Value="🗑"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IslemTipi}" Value="Guncelleme">
-                    <Setter TargetName="NodeCircle" Property="Background" Value="#3B82F6"/>
-                    <Setter TargetName="NodeCircle" Property="Effect" Value="{StaticResource GlowBlue}"/>
-                    <Setter TargetName="TypeIcon" Property="Background" Value="#DBEAFE"/>
-                    <Setter TargetName="TypeIconText" Property="Text" Value="🏷"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IslemTipi}" Value="Login">
-                    <Setter TargetName="NodeCircle" Property="Background" Value="#A78BFA"/>
-                    <Setter TargetName="NodeCircle" Property="Effect" Value="{StaticResource GlowPurple}"/>
-                    <Setter TargetName="TypeIcon" Property="Background" Value="#EDE9FE"/>
-                    <Setter TargetName="TypeIconText" Property="Text" Value="🔐"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
-    </UserControl.Resources>
-
-    <Grid>
-        <!-- Cute Vibrant Background Gradient -->
-        <Grid.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#FFEDFA" Offset="0"/>
-                <GradientStop Color="#FFF2E8" Offset="0.5"/>
-                <GradientStop Color="#EAF2FF" Offset="1"/>
-            </LinearGradientBrush>
-        </Grid.Background>
-
-        <!-- Blobs for "Süslü" look -->
-        <Grid IsHitTestVisible="False" ClipToBounds="True">
-            <Ellipse Width="400" Height="400" Fill="#FFD1E8" Opacity="0.5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-100,-100,0,0">
-                <Ellipse.Effect><BlurEffect Radius="80"/></Ellipse.Effect>
-            </Ellipse>
-            <Ellipse Width="500" Height="500" Fill="#D1E8FF" Opacity="0.5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-150,-150">
-                <Ellipse.Effect><BlurEffect Radius="100"/></Ellipse.Effect>
-            </Ellipse>
-        </Grid>
-
-        <Grid Margin="32">
+    <Grid Background="{StaticResource CorpBackground}">
+        <Grid Margin="28">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Header ve Arama -->
-            <Border Grid.Row="0" Style="{StaticResource GlassmorphismPanel}" Padding="24" Margin="0,0,0,24" Effect="{StaticResource CardShadow}">
+            <!-- Header -->
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="300"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="İşlem Geçmişi" FontSize="28" FontWeight="Bold"
+                               FontFamily="Segoe UI" Foreground="{StaticResource TextPrimary}"/>
+                    <TextBlock Text="Sistem üzerindeki tüm aksiyonlar — Kim, Ne Zaman, Hangi İşlem"
+                               FontSize="13" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <TextBox Grid.Column="1"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource ModernTextBox}"
+                         Tag="Kullanıcı, işlem veya detay ara..." VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- Özet İstatistik Kartları -->
+            <UniformGrid Grid.Row="1" Columns="6" Margin="0,0,0,20">
+                <Border Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1"
+                        CornerRadius="12" Padding="16" Margin="0,0,10,0"
+                        Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <Border Background="{StaticResource CorpBlueSoft}" CornerRadius="8"
+                                Padding="6" Width="32" HorizontalAlignment="Left">
+                            <TextBlock Text="≡" FontSize="14" Foreground="{StaticResource CorpBlue}"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Toplam Kayıt" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,8,0,2"/>
+                        <TextBlock Text="{Binding AllLogs.Count}" FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimary}"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1"
+                        CornerRadius="12" Padding="16" Margin="5,0,5,0"
+                        Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <Border Background="{StaticResource CorpEmeraldSoft}" CornerRadius="8"
+                                Padding="6" Width="32" HorizontalAlignment="Left">
+                            <TextBlock Text="+" FontSize="16" Foreground="{StaticResource CorpEmerald}"
+                                       FontWeight="Bold" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Ekleme" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,8,0,2"/>
+                        <TextBlock Text="{Binding AddCount}" FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource CorpEmerald}"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1"
+                        CornerRadius="12" Padding="16" Margin="5,0,5,0"
+                        Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <Border Background="{StaticResource CorpAmberSoft}" CornerRadius="8"
+                                Padding="6" Width="32" HorizontalAlignment="Left">
+                            <TextBlock Text="✎" FontSize="14" Foreground="{StaticResource CorpAmber}"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Güncelleme" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,8,0,2"/>
+                        <TextBlock Text="{Binding UpdateCount}" FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource CorpAmber}"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1"
+                        CornerRadius="12" Padding="16" Margin="5,0,5,0"
+                        Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <Border Background="{StaticResource CorpRedSoft}" CornerRadius="8"
+                                Padding="6" Width="32" HorizontalAlignment="Left">
+                            <TextBlock Text="✕" FontSize="14" Foreground="{StaticResource CorpRed}"
+                                       FontWeight="Bold" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Silme" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,8,0,2"/>
+                        <TextBlock Text="{Binding DeleteCount}" FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource CorpRed}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Stok Çıkışı -->
+                <Border Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1"
+                        CornerRadius="12" Padding="16" Margin="5,0,5,0"
+                        Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <Border Background="#FEF3C7" CornerRadius="8"
+                                Padding="6" Width="32" HorizontalAlignment="Left">
+                            <TextBlock Text="↓" FontSize="16" Foreground="#92400E"
+                                       FontWeight="Bold" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Stok Çıkışı" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,8,0,2"/>
+                        <TextBlock Text="{Binding StokCikisiCount}" FontSize="22" FontWeight="Bold"
+                                   Foreground="#92400E"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- İade -->
+                <Border Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1"
+                        CornerRadius="12" Padding="16" Margin="5,0,0,0"
+                        Effect="{StaticResource CardShadow}">
+                    <StackPanel>
+                        <Border Background="#EDE9FE" CornerRadius="8"
+                                Padding="6" Width="32" HorizontalAlignment="Left">
+                            <TextBlock Text="↩" FontSize="14" Foreground="#5B21B6"
+                                       FontWeight="Bold" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="İade / Kampanya" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,8,0,2"/>
+                        <TextBlock Text="{Binding ReturnCount}" FontSize="22" FontWeight="Bold"
+                                   Foreground="#5B21B6"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Table Header -->
+            <Border Grid.Row="2" Background="#F8FAFC" BorderBrush="#E2E8F0"
+                    BorderThickness="1,1,1,0" CornerRadius="10,10,0,0" Padding="16,10">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="44"/>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="130"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="150"/>
                     </Grid.ColumnDefinitions>
-                    
-                    <StackPanel Grid.Column="0">
-                        <TextBlock Text="İşlem Geçmişi 🌸" FontSize="32" FontWeight="Heavy" FontFamily="Comic Sans MS, Segoe UI Print, Segoe UI" Foreground="#EC4899"/>
-                        <TextBlock Text="Sistem üzerindeki tüm aktiviteleri günlüğünüzden takip edin ✨" FontSize="15" Foreground="#9CA3AF" FontWeight="SemiBold" Margin="0,4,0,0"/>
-                    </StackPanel>
+                    <TextBlock Grid.Column="0" Text=""              Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="1" Text="KULLANICI"    Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="2" Text="İŞLEM"        Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="3" Text="DETAY"        Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="4" Text="ESKİ DEĞER"  Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="5" Text="YENİ DEĞER"  Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="6" Text="TARİH / SAAT" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                </Grid>
+            </Border>
 
-                <!-- Arama Kutusu (Live Search) -->
-                <TextBox Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                         Style="{StaticResource SearchTextBox}" Tag="Arama (Kullanıcı, İşlem...)" 
-                         VerticalAlignment="Center"/>
-            </Grid>
-        </Border>
+            <!-- Log Table Rows -->
+            <Border Grid.Row="3" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1"
+                    CornerRadius="0,0,10,10" Effect="{StaticResource CardShadow}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding FilteredLogsView.View}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:Log}">
+                                <Border x:Name="RowBorder" BorderBrush="#F1F5F9" BorderThickness="0,0,0,1"
+                                        Padding="16,12">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="44"/>
+                                            <ColumnDefinition Width="130"/>
+                                            <ColumnDefinition Width="130"/>
+                                            <ColumnDefinition Width="*" MinWidth="160"/>
+                                            <ColumnDefinition Width="140"/>
+                                            <ColumnDefinition Width="140"/>
+                                            <ColumnDefinition Width="150"/>
+                                        </Grid.ColumnDefinitions>
 
-            <!-- Timeline Log Listesi -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{Binding FilteredLogsView.View}" 
-                              ItemTemplate="{StaticResource LogItemTemplate}"/>
-            </ScrollViewer>
+                                        <!-- Type Icon -->
+                                        <Border x:Name="TypeIcon" Width="32" Height="32" CornerRadius="8"
+                                                Background="{StaticResource CorpBlueSoft}" VerticalAlignment="Center">
+                                            <TextBlock x:Name="TypeIconText" Text="≡" FontSize="14"
+                                                       Foreground="{StaticResource CorpBlue}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <!-- Kullanıcı -->
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                            <TextBlock Text="{Binding KullaniciAdi}" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextPrimary}"/>
+                                            <TextBlock Text="Market Yöneticisi" FontSize="11"
+                                                       Foreground="{StaticResource TextMuted}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+
+                                        <!-- İşlem Tipi Badge -->
+                                        <Border Grid.Column="2" x:Name="TypeBadge"
+                                                Background="{StaticResource CorpBlueSoft}"
+                                                CornerRadius="6" Padding="8,5" Margin="0,0,10,0"
+                                                VerticalAlignment="Center" HorizontalAlignment="Left">
+                                            <TextBlock x:Name="TypeBadgeText"
+                                                       Text="{Binding IslemTipi}"
+                                                       Foreground="{StaticResource CorpBlue}"
+                                                       FontSize="11" FontWeight="SemiBold"/>
+                                        </Border>
+
+                                        <!-- Detay -->
+                                        <TextBlock Grid.Column="3" Text="{Binding Detay}"
+                                                   Foreground="{StaticResource TextPrimary}"
+                                                   FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"
+                                                   Margin="0,0,10,0"/>
+
+                                        <!-- Eski Değer -->
+                                        <Border Grid.Column="4" CornerRadius="6" Padding="8,4" Margin="0,0,6,0"
+                                                VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                Background="#FEE2E2"
+                                                Visibility="{Binding EskiDeger, Converter={StaticResource StringToVisibility}}">
+                                            <TextBlock Text="{Binding EskiDeger}" Foreground="#991B1B"
+                                                       FontSize="11" TextWrapping="Wrap"/>
+                                        </Border>
+
+                                        <!-- Yeni Değer -->
+                                        <Border Grid.Column="5" CornerRadius="6" Padding="8,4" Margin="0,0,6,0"
+                                                VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                Background="{StaticResource CorpEmeraldSoft}"
+                                                Visibility="{Binding YeniDeger, Converter={StaticResource StringToVisibility}}">
+                                            <TextBlock Text="{Binding YeniDeger}" Foreground="#065F46"
+                                                       FontSize="11" TextWrapping="Wrap"/>
+                                        </Border>
+
+                                        <!-- Tarih -->
+                                        <StackPanel Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding Tarih, StringFormat='dd MMM yyyy'}"
+                                                       FontSize="12" Foreground="{StaticResource TextPrimary}"
+                                                       FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="{Binding Tarih, StringFormat='HH:mm:ss'}"
+                                                       FontSize="11" Foreground="{StaticResource TextMuted}"
+                                                       HorizontalAlignment="Right" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding IslemTipi}" Value="Ekleme">
+                                        <Setter TargetName="TypeIcon"      Property="Background" Value="{StaticResource CorpEmeraldSoft}"/>
+                                        <Setter TargetName="TypeIconText"  Property="Text"       Value="+"/>
+                                        <Setter TargetName="TypeIconText"  Property="Foreground" Value="{StaticResource CorpEmerald}"/>
+                                        <Setter TargetName="TypeBadge"     Property="Background" Value="{StaticResource CorpEmeraldSoft}"/>
+                                        <Setter TargetName="TypeBadgeText" Property="Foreground" Value="{StaticResource CorpEmerald}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IslemTipi}" Value="Silme">
+                                        <Setter TargetName="TypeIcon"      Property="Background" Value="{StaticResource CorpRedSoft}"/>
+                                        <Setter TargetName="TypeIconText"  Property="Text"       Value="✕"/>
+                                        <Setter TargetName="TypeIconText"  Property="Foreground" Value="{StaticResource CorpRed}"/>
+                                        <Setter TargetName="TypeBadge"     Property="Background" Value="{StaticResource CorpRedSoft}"/>
+                                        <Setter TargetName="TypeBadgeText" Property="Foreground" Value="{StaticResource CorpRed}"/>
+                                        <Setter TargetName="RowBorder"     Property="Background" Value="#FFFAFA"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IslemTipi}" Value="Guncelleme">
+                                        <Setter TargetName="TypeIcon"      Property="Background" Value="{StaticResource CorpAmberSoft}"/>
+                                        <Setter TargetName="TypeIconText"  Property="Text"       Value="✎"/>
+                                        <Setter TargetName="TypeIconText"  Property="Foreground" Value="{StaticResource CorpAmber}"/>
+                                        <Setter TargetName="TypeBadge"     Property="Background" Value="{StaticResource CorpAmberSoft}"/>
+                                        <Setter TargetName="TypeBadgeText" Property="Foreground" Value="{StaticResource CorpAmber}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IslemTipi}" Value="Login">
+                                        <Setter TargetName="TypeIcon"      Property="Background" Value="#EDE9FE"/>
+                                        <Setter TargetName="TypeIconText"  Property="Text"       Value="◉"/>
+                                        <Setter TargetName="TypeIconText"  Property="Foreground" Value="#6D28D9"/>
+                                        <Setter TargetName="TypeBadge"     Property="Background" Value="#EDE9FE"/>
+                                        <Setter TargetName="TypeBadgeText" Property="Foreground" Value="#6D28D9"/>
+                                    </DataTrigger>
+                                    <!-- Yeni log tipleri -->
+                                    <DataTrigger Binding="{Binding IslemTipi}" Value="FiyatGuncelleme">
+                                        <Setter TargetName="TypeIcon"      Property="Background" Value="#FEF3C7"/>
+                                        <Setter TargetName="TypeIconText"  Property="Text"       Value="₺"/>
+                                        <Setter TargetName="TypeIconText"  Property="Foreground" Value="#92400E"/>
+                                        <Setter TargetName="TypeBadge"     Property="Background" Value="#FEF3C7"/>
+                                        <Setter TargetName="TypeBadgeText" Property="Foreground" Value="#92400E"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IslemTipi}" Value="StokCikisi">
+                                        <Setter TargetName="TypeIcon"      Property="Background" Value="#E0F2FE"/>
+                                        <Setter TargetName="TypeIconText"  Property="Text"       Value="↓"/>
+                                        <Setter TargetName="TypeIconText"  Property="Foreground" Value="#0369A1"/>
+                                        <Setter TargetName="TypeBadge"     Property="Background" Value="#E0F2FE"/>
+                                        <Setter TargetName="TypeBadgeText" Property="Foreground" Value="#0369A1"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IslemTipi}" Value="UrunIade">
+                                        <Setter TargetName="TypeIcon"      Property="Background" Value="#EDE9FE"/>
+                                        <Setter TargetName="TypeIconText"  Property="Text"       Value="↩"/>
+                                        <Setter TargetName="TypeIconText"  Property="Foreground" Value="#5B21B6"/>
+                                        <Setter TargetName="TypeBadge"     Property="Background" Value="#EDE9FE"/>
+                                        <Setter TargetName="TypeBadgeText" Property="Foreground" Value="#5B21B6"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IslemTipi}" Value="Kampanya">
+                                        <Setter TargetName="TypeIcon"      Property="Background" Value="{StaticResource CorpAmberSoft}"/>
+                                        <Setter TargetName="TypeIconText"  Property="Text"       Value="📢"/>
+                                        <Setter TargetName="TypeIconText"  Property="Foreground" Value="{StaticResource CorpAmber}"/>
+                                        <Setter TargetName="TypeBadge"     Property="Background" Value="{StaticResource CorpAmberSoft}"/>
+                                        <Setter TargetName="TypeBadgeText" Property="Foreground" Value="{StaticResource CorpAmber}"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

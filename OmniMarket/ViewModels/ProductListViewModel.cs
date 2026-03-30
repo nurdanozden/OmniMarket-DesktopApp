@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows;
 using OmniMarket.Helpers;
 using OmniMarket.Models;
@@ -29,15 +29,12 @@ public class ProductListViewModel : BaseViewModel
     }
 
     // Sabit kategori listesi (form için)
-    public List<string> FormCategories { get; } = new()
+    private List<string> _formCategories = new();
+    public List<string> FormCategories
     {
-        "Un & Bakliyat",
-        "Süt & Süt Ürünleri",
-        "İçecekler",
-        "Atıştırmalıklar",
-        "Temizlik Ürünleri",
-        "Dondurulmuş Gıdalar"
-    };
+        get => _formCategories;
+        set => SetProperty(ref _formCategories, value);
+    }
 
     // Form fields
     private string _formName = string.Empty;
@@ -127,6 +124,7 @@ public class ProductListViewModel : BaseViewModel
     public RelayCommand ClearFilterCommand { get; }
     public RelayCommand GenerateBarcodeCommand { get; }
     public RelayCommand CallSupplierCommand { get; }
+    public RelayCommand ArchiveSelectedCommand { get; }
 
     #endregion
 
@@ -141,6 +139,7 @@ public class ProductListViewModel : BaseViewModel
         ClearFilterCommand = new RelayCommand(ClearFilter);
         GenerateBarcodeCommand = new RelayCommand(GenerateBarcode);
         CallSupplierCommand = new RelayCommand(ExecuteCallSupplier);
+        ArchiveSelectedCommand = new RelayCommand(ExecuteArchive);
     }
 
     public void Initialize(int marketId, string marketName, string? filter = null)
@@ -154,12 +153,28 @@ public class ProductListViewModel : BaseViewModel
 
     private void LoadProducts()
     {
-        var products = _productService.GetProducts(_marketId);
-        Products = new ObservableCollection<Product>(products);
+        try
+        {
+            var products = _productService.GetProducts(_marketId);
+            Products = new ObservableCollection<Product>(products ?? new List<Product>());
 
-        var categories = _productService.GetCategories(_marketId);
-        categories.Insert(0, "Tüm Kategoriler");
-        Categories = categories;
+            var rawCategories = _productService.GetCategories(_marketId) ?? new List<string>();
+            FormCategories = new List<string>(rawCategories);
+            
+            var categories = new List<string>(rawCategories);
+            categories.Insert(0, "Tüm Kategoriler");
+            Categories = categories;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ürünler yüklenirken hata oluştu!\n\nHata: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}", 
+                "Crash Engellendi", MessageBoxButton.OK, MessageBoxImage.Error);
+            
+            // UI kilitlenmesin diye boş liste ayarla
+            Products = new ObservableCollection<Product>();
+            Categories = new List<string> { "Tüm Kategoriler" };
+            FormCategories = new List<string>();
+        }
     }
 
     private void ApplyInitialFilter()
@@ -203,26 +218,41 @@ public class ProductListViewModel : BaseViewModel
 
     private void ExecuteSearch()
     {
-        if (string.IsNullOrWhiteSpace(SearchText))
+        try
         {
-            LoadProducts();
-            return;
-        }
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                LoadProducts();
+                return;
+            }
 
-        var results = _productService.SearchProducts(_marketId, SearchText);
-        Products = new ObservableCollection<Product>(results);
+            var results = _productService.SearchProducts(_marketId, SearchText);
+            Products = new ObservableCollection<Product>(results ?? new List<Product>());
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Arama sırasında hata: {ex.Message}", "Hata Testi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private void ExecuteFilter()
     {
-        if (string.IsNullOrWhiteSpace(SelectedCategory) || SelectedCategory == "Tüm Kategoriler")
+        try
         {
-            LoadProducts();
-            return;
-        }
+            if (string.IsNullOrWhiteSpace(SelectedCategory) || SelectedCategory == "Tüm Kategoriler")
+            {
+                LoadProducts();
+                return;
+            }
 
-        var results = _productService.FilterByCategory(_marketId, SelectedCategory);
-        Products = new ObservableCollection<Product>(results);
+            var results = _productService.FilterByCategory(_marketId, SelectedCategory);
+            Products = new ObservableCollection<Product>(results ?? new List<Product>());
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Kategori filtreleme sırasında hata: {ex.Message}\nStack: {ex.StackTrace}", 
+                "Hata Yakalandı", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private void ClearFilter()
@@ -277,24 +307,63 @@ public class ProductListViewModel : BaseViewModel
 
     private void ExecuteDelete()
     {
+        var selectedItems = Products.Where(p => p.IsSelected).ToList();
+        
+        if (selectedItems.Any())
+        {
+            var result = MessageBox.Show(
+                $"{selectedItems.Count} adet ürünü silmek istediğinize emin misiniz?",
+                "Silme Onayı",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                foreach(var item in selectedItems)
+                {
+                    _productService.DeleteProduct(item.Id, _marketName);
+                }
+                LoadProducts();
+            }
+            return;
+        }
+
         if (SelectedProduct == null)
         {
-            MessageBox.Show("Lütfen silmek istediğiniz ürünü seçin.", "Uyarı",
+            MessageBox.Show("Lütfen silmek istediğiniz ürünü liste üzerinden seçiniz (veya yanındaki kutucuğu işaretleyiniz).", "Uyarı",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
-        var result = MessageBox.Show(
+        var singleResult = MessageBox.Show(
             $"\"{SelectedProduct.Name}\" ürününü silmek istediğinize emin misiniz?",
             "Silme Onayı",
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
 
-        if (result == MessageBoxResult.Yes)
+        if (singleResult == MessageBoxResult.Yes)
         {
             _productService.DeleteProduct(SelectedProduct.Id, _marketName);
             LoadProducts();
         }
+    }
+    
+    private void ExecuteArchive()
+    {
+        var selectedItems = Products.Where(p => p.IsSelected).ToList();
+        if (!selectedItems.Any())
+        {
+            MessageBox.Show("Arşivlemek için en az bir ürün seçmelisiniz.", "Uyarı",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        
+        MessageBox.Show($"{selectedItems.Count} adet ürün başarıyla arşivlendi! (Demo)", "Bilgi", MessageBoxButton.OK, MessageBoxImage.Information);
+        foreach(var item in selectedItems)
+        {
+            item.IsSelected = false; // Temizle
+        }
+        LoadProducts();
     }
 
     private void ExecuteSave()

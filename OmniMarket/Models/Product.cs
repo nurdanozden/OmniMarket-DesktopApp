@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OmniMarket.Models;
@@ -33,6 +33,13 @@ public class Product
 
     public int? TedarikciId { get; set; }
 
+    // Kampanya indirimi (%)
+    [Column(TypeName = "decimal(5,2)")]
+    public decimal? DiscountRate { get; set; }
+
+    // İade talebi durumu
+    public bool ReturnRequested { get; set; }
+
     // Navigation property
     [ForeignKey("MarketId")]
     public Market? Market { get; set; }
@@ -62,4 +69,8 @@ public class Product
     // Computed: Stok durumu
     [NotMapped]
     public bool IsLowStock => Stock < 5;
+
+    // Checkbox bind için
+    [NotMapped]
+    public bool IsSelected { get; set; }
 }

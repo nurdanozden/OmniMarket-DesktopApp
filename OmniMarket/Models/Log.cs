@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace OmniMarket.Models;
 
@@ -7,7 +7,11 @@ public enum LogType
     Ekleme,
     Silme,
     Guncelleme,
-    Login
+    Login,
+    StokCikisi,
+    FiyatGuncelleme,
+    UrunIade,
+    Kampanya
 }
 
 public class Log
@@ -28,6 +32,13 @@ public class Log
     [Required]
     [MaxLength(500)]
     public string Detay { get; set; } = string.Empty;
+
+    // Audit: değişiklik öncesi ve sonrası değerler
+    [MaxLength(500)]
+    public string? EskiDeger { get; set; }
+
+    [MaxLength(500)]
+    public string? YeniDeger { get; set; }
 
     [Required]
     public DateTime Tarih { get; set; } = DateTime.UtcNow;

@@ -8,7 +8,7 @@
         MinHeight="600" MinWidth="900"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource SpaceBackground}"
-        FontFamily="Poppins">
+        FontFamily="Segoe UI">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -20,6 +20,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:SupplierListViewModel}">
             <views:SupplierListView DataContext="{Binding}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SupplierDetailViewModel}">
+            <views:SupplierDetailView DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:LogListViewModel}">
             <views:LogListView DataContext="{Binding}"/>
@@ -35,8 +38,8 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Sidebar -->
-        <Border Grid.Column="0" Background="{StaticResource WoodSidebarBackground}" BorderBrush="#FCE7F3" BorderThickness="0,0,2,0">
+        <!-- ── Sidebar (Slate-900 dark) ── -->
+        <Border Grid.Column="0" Background="{StaticResource CorpSidebar}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -44,40 +47,74 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Logo Section -->
-                <StackPanel Grid.Row="0" Margin="20,24,20,24">
-                    <TextBlock Text="🏪" FontSize="45" HorizontalAlignment="Center" Margin="0,0,0,4">
-                        <TextBlock.Effect>
-                            <DropShadowEffect BlurRadius="15" Color="#F472B6" ShadowDepth="4" Opacity="0.5"/>
-                        </TextBlock.Effect>
-                    </TextBlock>
-                    <TextBlock Text="OmniMarket" FontSize="24" FontWeight="Heavy" FontFamily="Comic Sans MS, Segoe UI Print, Segoe UI"
-                               Foreground="#EC4899" HorizontalAlignment="Center"/>
-                    <TextBlock Text="{Binding CurrentMarket.Name}" FontSize="13" FontWeight="SemiBold"
-                               Foreground="#9CA3AF" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                    <Border Height="2" Background="#FCE7F3" Margin="0,20,0,0" CornerRadius="1"/>
+                <!-- Logo -->
+                <StackPanel Grid.Row="0" Margin="20,28,20,20">
+                    <!-- Icon row -->
+                    <Border Width="48" Height="48" Background="#1E293B" CornerRadius="12"
+                            HorizontalAlignment="Center" Margin="0,0,0,12">
+                        <TextBlock Text="📦" FontSize="26"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="OmniMarket" FontSize="20" FontWeight="Bold"
+                               Foreground="#F1F5F9" HorizontalAlignment="Center"
+                               FontFamily="Segoe UI"/>
+                    <TextBlock Text="{Binding CurrentMarket.Name}" FontSize="12"
+                               Foreground="#64748B" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    <!-- Divider -->
+                    <Border Height="1" Background="#1E293B" Margin="0,18,0,0" CornerRadius="1"/>
                 </StackPanel>
 
                 <!-- Navigation -->
-                <StackPanel Grid.Row="1" Margin="12,0">
-                    <Button Content="📊  Dashboard" Command="{Binding ShowDashboardCommand}"
-                            Style="{StaticResource SidebarButton}"/>
-                    <Button Content="📦  Ürünler" Command="{Binding ShowProductsCommand}"
-                            Style="{StaticResource SidebarButton}"/>
-                    <Button Content="🔗  Tedarikçiler" Command="{Binding ShowSuppliersCommand}"
-                            Style="{StaticResource SidebarSupplierButton}"/>
-                    <Button Content="⚙️  Ayarlar" Command="{Binding ShowSettingsCommand}"
-                            Style="{StaticResource SidebarSettingsButton}"/>
-                    <Button Content="🌸  İşlem Geçmişi" Command="{Binding ShowLogsCommand}"
+                <StackPanel Grid.Row="1" Margin="12,4">
+                    <Button Command="{Binding ShowDashboardCommand}"
+                            Style="{StaticResource SidebarButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="▦" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowProductsCommand}"
+                            Style="{StaticResource SidebarButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="◫" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Ürünler" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowSuppliersCommand}"
+                            Style="{StaticResource SidebarSupplierButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⊞" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Tedarikçiler" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowSettingsCommand}"
+                            Style="{StaticResource SidebarSettingsButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⚙" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Ayarlar" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ShowLogsCommand}"
                             Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}"
-                            Style="{StaticResource SidebarLogButton}"/>
+                            Style="{StaticResource SidebarLogButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="≡" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="İşlem Geçmişi" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
 
                 <!-- Logout -->
                 <StackPanel Grid.Row="2" Margin="12,0,12,20">
-                    <Border Height="1" Background="#FCD34D" Margin="0,0,0,16"/>
-                    <Button Content="🚪  Çıkış Yap" Command="{Binding LogoutCommand}"
-                            Style="{StaticResource SidebarButton}" Foreground="#F97316"/>
+                    <Border Height="1" Background="#1E293B" Margin="0,0,0,12" CornerRadius="1"/>
+                    <Button Command="{Binding LogoutCommand}"
+                            Style="{StaticResource SidebarButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="→" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"
+                                       Foreground="#F87171"/>
+                            <TextBlock Text="Çıkış Yap" Foreground="#F87171" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

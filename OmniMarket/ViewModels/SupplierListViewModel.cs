@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows;
 using OmniMarket.Helpers;
 using OmniMarket.Models;
@@ -62,12 +62,12 @@ public class SupplierListViewModel : BaseViewModel
 
     public SupplierListViewModel()
     {
-        AddSupplierCommand = new RelayCommand(ShowAddForm);
-        EditSupplierCommand = new RelayCommand(ShowEditForm);
+        AddSupplierCommand   = new RelayCommand(ShowAddForm);
+        EditSupplierCommand  = new RelayCommand(ShowEditForm);
         DeleteSupplierCommand = new RelayCommand(ExecuteDelete);
-        SaveSupplierCommand = new RelayCommand(ExecuteSave);
-        CancelFormCommand = new RelayCommand(HideForm);
-        RefreshCommand = new RelayCommand(LoadSuppliers);
+        SaveSupplierCommand  = new RelayCommand(ExecuteSave);
+        CancelFormCommand    = new RelayCommand(HideForm);
+        RefreshCommand       = new RelayCommand(LoadSuppliers);
     }
 
     public void Initialize(int marketId)

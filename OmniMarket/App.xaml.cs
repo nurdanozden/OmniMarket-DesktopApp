@@ -14,6 +14,26 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // Global Exception Handler (Ani çökmeleri yakalamak için)
+        this.DispatcherUnhandledException += (s, args) =>
+        {
+            System.IO.File.WriteAllText("crash.log", $"Dispatcher Çökmesi: {args.Exception}");
+            MessageBox.Show($"Kritik Çökme Engellendi!\n\nHata: {args.Exception.Message}\n\nDetay: {args.Exception.InnerException?.Message}\n\nStack:\n{args.Exception.StackTrace}",
+                            "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            args.Handled = true; // Uygulamanın kapanmasını önle
+        };
+
+        AppDomain.CurrentDomain.UnhandledException += (s, args) =>
+        {
+            System.IO.File.WriteAllText("crash.log", $"AppDomain Çökmesi: {args.ExceptionObject}");
+        };
+
+        System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (s, args) =>
+        {
+            System.IO.File.WriteAllText("crash.log", $"Task Çökmesi: {args.Exception}");
+            args.SetObserved();
+        };
+
         // Veritabanını oluştur / güncelle + demo veri
         using (var db = new AppDbContext())
         {
@@ -39,7 +59,32 @@ public partial class App : Application
             }
             catch { /* Hata görmezden geliniyor (Zaten varsa vs.) */ }
 
+            // Yeni ürün alanları — mevcut DB'ye ALTER TABLE ile ekleniyor
+            try
+            {
+                db.Database.ExecuteSqlRaw(@"ALTER TABLE ""Products"" ADD COLUMN IF NOT EXISTS ""DiscountRate"" numeric(5,2) NULL;");
+            }
+            catch { }
+            try
+            {
+                db.Database.ExecuteSqlRaw(@"ALTER TABLE ""Products"" ADD COLUMN IF NOT EXISTS ""ReturnRequested"" boolean NOT NULL DEFAULT FALSE;");
+            }
+            catch { }
+
+            // Log tablosuna audit sütunları — EskiDeger / YeniDeger
+            try
+            {
+                db.Database.ExecuteSqlRaw(@"ALTER TABLE ""Logs"" ADD COLUMN IF NOT EXISTS ""EskiDeger"" character varying(500) NULL;");
+            }
+            catch { }
+            try
+            {
+                db.Database.ExecuteSqlRaw(@"ALTER TABLE ""Logs"" ADD COLUMN IF NOT EXISTS ""YeniDeger"" character varying(500) NULL;");
+            }
+            catch { }
+
             DataSeeder.Seed(db);
+            DataSeeder.FixEmptySupplierIds(db);
             DataSeeder.UpdateAllProductExpiryDates(db);
         }
 

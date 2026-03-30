@@ -8,151 +8,120 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
-        <!-- Floating Animations for cute mascot and background -->
-        <Storyboard x:Key="FloatingAnim" RepeatBehavior="Forever" AutoReverse="True">
-            <DoubleAnimation Storyboard.TargetName="Mascot" 
-                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                             From="-15" To="10" Duration="0:0:2.5">
+        <!-- Fade-in/Slide-up Login Animation -->
+        <Storyboard x:Key="FadeInAnim">
+            <DoubleAnimation Storyboard.TargetName="MainCard" 
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.6">
                 <DoubleAnimation.EasingFunction>
-                    <SineEase EasingMode="EaseInOut"/>
+                    <CubicEase EasingMode="EaseOut"/>
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="BgBlob1" 
+            <DoubleAnimation Storyboard.TargetName="MainCard" 
                              Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                             From="-30" To="30" Duration="0:0:8">
+                             From="30" To="0" Duration="0:0:0.6">
                 <DoubleAnimation.EasingFunction>
-                    <SineEase EasingMode="EaseInOut"/>
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="BgBlob2" 
-                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                             From="-40" To="40" Duration="0:0:11">
-                <DoubleAnimation.EasingFunction>
-                    <SineEase EasingMode="EaseInOut"/>
+                    <CubicEase EasingMode="EaseOut"/>
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
-        
-        <!-- Super Cute Pink Button Style -->
-        <Style x:Key="CuteButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#F472B6" Offset="0"/>
-                        <GradientStop Color="#EC4899" Offset="1"/>
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontWeight" Value="Heavy"/>
-            <Setter Property="Padding" Value="20,14"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
     </UserControl.Resources>
 
     <UserControl.Triggers>
         <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-            <BeginStoryboard Storyboard="{StaticResource FloatingAnim}"/>
+            <BeginStoryboard Storyboard="{StaticResource FadeInAnim}"/>
         </EventTrigger>
     </UserControl.Triggers>
 
     <Grid>
-        <!-- Cute Vibrant Background Gradient -->
+        <!-- Dark Professional Corporate Background -->
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#FFEDFA" Offset="0"/>
-                <GradientStop Color="#FFF2E8" Offset="0.5"/>
-                <GradientStop Color="#EAF2FF" Offset="1"/>
+                <GradientStop Color="#0F172A" Offset="0"/>   <!-- Slate 900 -->
+                <GradientStop Color="#1E293B" Offset="0.6"/> <!-- Slate 800 -->
+                <GradientStop Color="#0B1120" Offset="1"/>   <!-- Navy Dark -->
             </LinearGradientBrush>
         </Grid.Background>
 
-        <!-- Blobs for "Süslü" look -->
+        <!-- Subtle Background Pattern/Glow overlay -->
         <Grid IsHitTestVisible="False" ClipToBounds="True">
-            <Ellipse x:Name="BgBlob1" Width="500" Height="500" Fill="#FFD1E8" Opacity="0.5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-150,-150,0,0">
-                <Ellipse.Effect><BlurEffect Radius="80"/></Ellipse.Effect>
-                <Ellipse.RenderTransform><TranslateTransform/></Ellipse.RenderTransform>
+            <Ellipse Width="800" Height="800" Fill="#1D4ED8" Opacity="0.10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-250,-250,0,0">
+                <Ellipse.Effect><BlurEffect Radius="150"/></Ellipse.Effect>
             </Ellipse>
-            <Ellipse x:Name="BgBlob2" Width="600" Height="600" Fill="#D1E8FF" Opacity="0.5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-200,-200">
-                <Ellipse.Effect><BlurEffect Radius="100"/></Ellipse.Effect>
-                <Ellipse.RenderTransform><TranslateTransform/></Ellipse.RenderTransform>
+            <Ellipse Width="600" Height="600" Fill="#059669" Opacity="0.08" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-150,-150">
+                <Ellipse.Effect><BlurEffect Radius="120"/></Ellipse.Effect>
             </Ellipse>
-            <Ellipse Width="350" Height="350" Fill="#FFF3B0" Opacity="0.4" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="300,-350,0,0">
-                <Ellipse.Effect><BlurEffect Radius="60"/></Ellipse.Effect>
-            </Ellipse>
-        </Grid>
-
-        <!-- Cute Sparkles Emoji -->
-        <Grid IsHitTestVisible="False" ClipToBounds="True">
-            <TextBlock Text="✨" FontSize="50" Opacity="0.8" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,100,0,0"/>
-            <TextBlock Text="🎀" FontSize="65" Opacity="0.4" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,80,100,0" RenderTransformOrigin="0.5,0.5">
-                <TextBlock.RenderTransform>
-                    <RotateTransform Angle="15"/>
-                </TextBlock.RenderTransform>
-            </TextBlock>
-            <TextBlock Text="🧁" FontSize="70" Opacity="0.3" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="150,0,0,100"/>
-            <TextBlock Text="💖" FontSize="45" Opacity="0.6" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,150,150"/>
         </Grid>
 
         <!-- Main Login Card Container -->
-        <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,50,0,0">
+        <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
             
-            <!-- Glass Card -->
-            <Border Width="440" Background="#E6FFFFFF" CornerRadius="40" Padding="45,75,45,45"
-                    BorderBrush="#FFFFFF" BorderThickness="4">
+            <!-- Modern Enterprise Card -->
+            <Border x:Name="MainCard" Width="420" Background="#FFFFFF" CornerRadius="16" Padding="40"
+                    BorderBrush="#E2E8F0" BorderThickness="1" Opacity="0">
+                <Border.RenderTransform>
+                    <TranslateTransform Y="30"/>
+                </Border.RenderTransform>
                 <Border.Effect>
-                    <DropShadowEffect BlurRadius="50" Color="#F472B6" ShadowDepth="15" Opacity="0.25"/>
+                    <DropShadowEffect BlurRadius="40" Color="#000000" ShadowDepth="10" Opacity="0.4"/>
                 </Border.Effect>
 
                 <StackPanel>
-                    <TextBlock Text="Hoş Geldiniz! 🌸" FontSize="36" FontWeight="Heavy" 
-                               FontFamily="Comic Sans MS, Segoe UI Print, Segoe UI" 
-                               Foreground="#EC4899" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                    <TextBlock Text="OmniMarket Şubesi" FontSize="16" 
-                               Foreground="#9CA3AF" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,40"/>
+                    <!-- Logo & Brand -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
+                        <Border Background="{StaticResource CorpSidebar}" Width="40" Height="40" CornerRadius="8" Margin="0,0,12,0"
+                                Effect="{StaticResource GlowBlue}">
+                            <TextBlock Text="OM" Foreground="#FFFFFF" FontWeight="Bold" FontSize="16" 
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="OmniMarket" FontSize="28" FontWeight="Bold" 
+                                   FontFamily="Segoe UI" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="Kurumsal Stok ve Sipariş Yönetimi" FontSize="13" 
+                               Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Margin="0,0,0,32"/>
 
                     <!-- Kullanıcı Adı -->
-                    <TextBlock Text="Kullanıcı Adı 🍭" Foreground="#F472B6" FontSize="14" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <TextBlock Text="KULLANICI ADI" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
                     <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ModernTextBox}" 
-                             Foreground="#BE185D" Background="#FFF1F2" BorderBrush="#FBCFE8"
-                             Tag="🏪 Kullanıcı adınızı girin" Margin="0,0,0,24" Padding="15,12" FontSize="14"/>
+                             Tag="Kurumsal sicil veya e-posta" Margin="0,0,0,20"/>
 
                     <!-- Şifre -->
-                    <TextBlock Text="Şifre 🔑" Foreground="#F472B6" FontSize="14" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <TextBlock Text="ŞİFRE" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
                     <Grid Margin="0,0,0,24">
                         <PasswordBox x:Name="PasswordBox"
-                                     Style="{StaticResource ModernPasswordBox}" 
-                                     Foreground="#BE185D" Background="#FFF1F2" BorderBrush="#FBCFE8"
-                                     Padding="15,12" FontSize="14"/>
-                        <TextBlock x:Name="PasswordPlaceholder" Text="Şifrenizi girin" 
-                                   Foreground="#9CA3AF" FontSize="12" FontFamily="Poppins"
-                                   VerticalAlignment="Center" Margin="16,0,0,0"
+                                     Style="{StaticResource ModernPasswordBox}"/>
+                        <TextBlock x:Name="PasswordPlaceholder" Text="Sistem şifreniz" 
+                                   Foreground="#94A3B8" FontSize="13" FontFamily="Segoe UI"
+                                   VerticalAlignment="Center" Margin="13,0,0,0"
                                    IsHitTestVisible="False"/>
                     </Grid>
 
                     <!-- Hata Mesajı -->
-                    <Border Background="#FEE2E2" CornerRadius="12" Padding="12" Margin="0,0,0,20"
+                    <Border Background="{StaticResource CorpRedSoft}" CornerRadius="8" Padding="12" Margin="0,0,0,20"
                             Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibility}}">
-                        <TextBlock Text="{Binding ErrorMessage}" Foreground="#EF4444"
-                                   FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="⚠ " Foreground="{StaticResource CorpRed}"/>
+                            <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource CorpRed}"
+                                       FontSize="13" FontWeight="SemiBold"/>
+                        </StackPanel>
                     </Border>
 
                     <!-- Giriş Butonu -->
-                    <Button Content="✨ Giriş ✨" Command="{Binding LoginCommand}"
-                            Style="{StaticResource CuteButton}" Margin="0,10,0,24">
+                    <Button Content="Sisteme Giriş Yap" Command="{Binding LoginCommand}"
+                            Style="{StaticResource SuccessButton}" FontSize="14" Padding="0,12" Margin="0,0,0,24">
                         <Button.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#F472B6" ShadowDepth="6" Opacity="0.5"/>
+                            <DropShadowEffect BlurRadius="12" Color="#059669" ShadowDepth="4" Opacity="0.3"/>
                         </Button.Effect>
                     </Button>
 
                     <!-- Kayıt Linki -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,28">
-                        <TextBlock Text="Bize henüz katılmadın mı? " Foreground="#9CA3AF" FontSize="14" FontWeight="Medium"/>
-                        <TextBlock FontSize="14" FontWeight="Bold">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,24">
+                        <TextBlock Text="İlk defa mı giriş yapıyorsunuz? " Foreground="{StaticResource TextMuted}" FontSize="13"/>
+                        <TextBlock FontSize="13" FontWeight="SemiBold">
                             <Hyperlink Command="{Binding GoToRegisterCommand}"
-                                       Foreground="#EC4899" TextDecorations="Underline">
-                                Kayıt Ol 🎀
+                                       Foreground="{StaticResource CorpBlue}" TextDecorations="None">
+                                Kullanıcı Oluşturun
                             </Hyperlink>
                         </TextBlock>
                     </StackPanel>
@@ -164,41 +133,19 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Height="2" Background="#FCE7F3" CornerRadius="1"/>
-                        <TextBlock Grid.Column="1" Text="🎈 VEYA 🎈" Foreground="#F9A8D4" FontWeight="Bold" FontSize="12" Margin="15,0"/>
-                        <Border Grid.Column="2" Height="2" Background="#FCE7F3" CornerRadius="1"/>
+                        <Border Grid.Column="0" Height="1" Background="#E2E8F0"/>
+                        <TextBlock Grid.Column="1" Text="GELİŞTİRİCİ ERİŞİMİ" Foreground="#94A3B8" FontWeight="SemiBold" FontSize="11" Margin="12,0"/>
+                        <Border Grid.Column="2" Height="1" Background="#E2E8F0"/>
                     </Grid>
 
                     <!-- Test Giriş Butonu -->
-                    <Button Content="🏪 Seçilmiş Giriş (NUR MARKET) 🏪"
+                    <Button Content="Hızlı Demo Girişi (Admin: NUR MARKET)"
                             Command="{Binding TestLoginCommand}"
-                            ToolTip="Demo verilerle hızlı giriş yap"
-                            Style="{StaticResource CuteButton}" Background="#A78BFA"
-                            FontSize="14" Padding="15,14">
-                        <Button.Effect>
-                            <DropShadowEffect BlurRadius="20" Color="#A78BFA" ShadowDepth="6" Opacity="0.5"/>
-                        </Button.Effect>
-                    </Button>
+                            ToolTip="Demoyu kurumsal ayarlar ile test et"
+                            Style="{StaticResource SecondaryButton}" 
+                            FontSize="13" Padding="0,10"/>
                 </StackPanel>
             </Border>
-
-            <!-- Floating Mascot Overlapping Top -->
-            <Border x:Name="Mascot" Width="140" Height="140" Background="#FFFFFF" CornerRadius="70" 
-                    VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,-70,0,0"
-                    BorderBrush="#FDE047" BorderThickness="5">
-                <Border.RenderTransform>
-                    <TranslateTransform X="0" Y="0"/>
-                </Border.RenderTransform>
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="30" Color="#FDE047" ShadowDepth="10" Opacity="0.7"/>
-                </Border.Effect>
-                <TextBlock Text="🏪" FontSize="90" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,10">
-                    <TextBlock.RenderTransform>
-                        <RotateTransform Angle="0"/>
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-            </Border>
-
         </Grid>
     </Grid>
 </UserControl>

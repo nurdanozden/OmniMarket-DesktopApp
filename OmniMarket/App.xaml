@@ -8,77 +8,87 @@
         <helpers:ExpiryStatusTextConverter x:Key="ExpiryStatusText"/>
         <helpers:StockWarningConverter x:Key="StockWarningColor"/>
         <helpers:CategoryToEmojiConverter x:Key="CategoryEmoji"/>
+        <helpers:HexStringToBrushConverter x:Key="HexToBrush"/>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
-
-        <!-- String to Visibility (show if non-empty) -->
         <helpers:StringToVisibilityConverter x:Key="StringToVisibility"/>
-        <!-- Zero count to Visibility (show if zero) -->
         <helpers:ZeroToVisibilityConverter x:Key="ZeroToVisibility"/>
 
-        <!-- ===== Soft Market Kasabasi Colors ===== -->
-        <SolidColorBrush x:Key="PastelGreen" Color="#ECFDF5"/>
-        <SolidColorBrush x:Key="PastelBlue" Color="#F0F9FF"/>
-        <SolidColorBrush x:Key="CreamPanel" Color="#FEFCE8"/>
-        <SolidColorBrush x:Key="AccentGreen" Color="#10B981"/>
-        <SolidColorBrush x:Key="AccentBlue" Color="#3B82F6"/>
-        <SolidColorBrush x:Key="AccentPrimary" Color="#3B82F6"/>
-        <SolidColorBrush x:Key="AccentOrange" Color="#F97316"/>
-        <SolidColorBrush x:Key="AccentPink" Color="#F472B6"/>
-        <SolidColorBrush x:Key="TextPrimary" Color="#374151"/>
-        <SolidColorBrush x:Key="TextMuted" Color="#6B7280"/>
+        <!-- ===== Corporate Color Palette ===== -->
+        <!-- Backgrounds -->
+        <SolidColorBrush x:Key="CorpBackground"   Color="#F1F5F9"/>  <!-- Slate-100 content bg -->
+        <SolidColorBrush x:Key="CorpSurface"      Color="#FFFFFF"/>  <!-- Card surface -->
+        <SolidColorBrush x:Key="CorpSidebar"      Color="#0F172A"/>  <!-- Slate-900 sidebar -->
+        <SolidColorBrush x:Key="CorpSidebarHover" Color="#1E293B"/>  <!-- Slate-800 hover -->
 
-        <!-- Soft pastel background -->
+        <!-- Accent Colors -->
+        <SolidColorBrush x:Key="CorpBlue"    Color="#1D4ED8"/>  <!-- Dashboard Blue -->
+        <SolidColorBrush x:Key="CorpBlueSoft" Color="#DBEAFE"/> <!-- Blue-100 backgrounds -->
+        <SolidColorBrush x:Key="CorpEmerald" Color="#059669"/>  <!-- Emerald-600 success -->
+        <SolidColorBrush x:Key="CorpEmeraldSoft" Color="#D1FAE5"/> <!-- Emerald-100 -->
+        <SolidColorBrush x:Key="CorpAmber"   Color="#D97706"/>  <!-- Amber warning -->
+        <SolidColorBrush x:Key="CorpAmberSoft" Color="#FEF3C7"/> <!-- Amber-100 -->
+        <SolidColorBrush x:Key="CorpRed"     Color="#DC2626"/>  <!-- Red danger -->
+        <SolidColorBrush x:Key="CorpRedSoft" Color="#FEE2E2"/>  <!-- Red-100 -->
+        <SolidColorBrush x:Key="CorpSlate"   Color="#475569"/>  <!-- Slate-600 secondary -->
+
+        <!-- Legacy aliases (used throughout views) -->
+        <SolidColorBrush x:Key="AccentPrimary" Color="#1D4ED8"/>
+        <SolidColorBrush x:Key="AccentBlue"    Color="#1D4ED8"/>
+        <SolidColorBrush x:Key="AccentGreen"   Color="#059669"/>
+        <SolidColorBrush x:Key="AccentOrange"  Color="#D97706"/>
+        <SolidColorBrush x:Key="AccentPink"    Color="#DC2626"/>  <!-- remapped to red -->
+        <SolidColorBrush x:Key="TextPrimary"   Color="#0F172A"/>
+        <SolidColorBrush x:Key="TextMuted"     Color="#64748B"/>
+        <SolidColorBrush x:Key="PastelGreen"   Color="#D1FAE5"/>
+        <SolidColorBrush x:Key="PastelBlue"    Color="#DBEAFE"/>
+        <SolidColorBrush x:Key="CreamPanel"    Color="#F8FAFC"/>
+
+        <!-- Main content background -->
         <LinearGradientBrush x:Key="SpaceBackground" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#FFEDFA" Offset="0"/>
-            <GradientStop Color="#FFF2E8" Offset="0.5"/>
-            <GradientStop Color="#EAF2FF" Offset="1"/>
+            <GradientStop Color="#F1F5F9" Offset="0"/>
+            <GradientStop Color="#E2E8F0" Offset="1"/>
         </LinearGradientBrush>
 
-        <!-- Sidebar cute background -->
-        <LinearGradientBrush x:Key="WoodSidebarBackground" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#FBCFE8" Offset="0"/>
-            <GradientStop Color="#FCE7F3" Offset="0.5"/>
-            <GradientStop Color="#FDF2F8" Offset="1"/>
-        </LinearGradientBrush>
+        <!-- Sidebar solid dark -->
+        <SolidColorBrush x:Key="WoodSidebarBackground" Color="#0F172A"/>
 
         <!-- ===== Shadow Effects ===== -->
-        <DropShadowEffect x:Key="CardShadow" BlurRadius="25" Direction="270"
-                          ShadowDepth="8" Opacity="0.15" Color="#F472B6"/>
+        <DropShadowEffect x:Key="CardShadow"  BlurRadius="20" Direction="270"
+                          ShadowDepth="6" Opacity="0.10" Color="#1E293B"/>
+        <DropShadowEffect x:Key="GlowBlue"    BlurRadius="10" ShadowDepth="0" Color="#3B82F6" Opacity="0.5"/>
+        <DropShadowEffect x:Key="GlowRed"     BlurRadius="12" ShadowDepth="0" Color="#DC2626" Opacity="0.4"/>
+        <DropShadowEffect x:Key="GlowGreen"   BlurRadius="10" ShadowDepth="0" Color="#059669" Opacity="0.5"/>
+        <DropShadowEffect x:Key="GlowAmber"   BlurRadius="10" ShadowDepth="0" Color="#D97706" Opacity="0.5"/>
+        <DropShadowEffect x:Key="GlowOrange"  BlurRadius="12" ShadowDepth="0" Color="#D97706" Opacity="0.6"/>
+        <DropShadowEffect x:Key="GlowPurple"  BlurRadius="10" ShadowDepth="0" Color="#6D28D9" Opacity="0.4"/>
 
-        <DropShadowEffect x:Key="GlowBlue" BlurRadius="10" ShadowDepth="0" Color="#93C5FD" Opacity="0.6"/>
-        <DropShadowEffect x:Key="GlowRed" BlurRadius="12" ShadowDepth="0" Color="#F9A8D4" Opacity="0.6"/>
-        <DropShadowEffect x:Key="GlowGreen" BlurRadius="10" ShadowDepth="0" Color="#6EE7B7" Opacity="0.6"/>
-        <DropShadowEffect x:Key="GlowAmber" BlurRadius="10" ShadowDepth="0" Color="#FCD34D" Opacity="0.6"/>
-        <DropShadowEffect x:Key="GlowOrange" BlurRadius="12" ShadowDepth="0" Color="#FDBA74" Opacity="0.7"/>
-        <DropShadowEffect x:Key="GlowPurple" BlurRadius="10" ShadowDepth="0" Color="#C4B5FD" Opacity="0.6"/>
-
-        <!-- Glassmorphism Panel Style -->
+        <!-- Card Panel -->
         <Style x:Key="GlassmorphismPanel" TargetType="Border">
-            <Setter Property="Background" Value="#E6FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#FFFFFF"/>
-            <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="CornerRadius" Value="24"/>
+            <Setter Property="Background"       Value="#FFFFFF"/>
+            <Setter Property="BorderBrush"      Value="#E2E8F0"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="CornerRadius"     Value="16"/>
         </Style>
 
         <!-- ===== ModernTextBox ===== -->
         <Style x:Key="ModernTextBox" TargetType="TextBox">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="Foreground" Value="#374151"/>
-            <Setter Property="CaretBrush" Value="{StaticResource AccentGreen}"/>
-            <Setter Property="BorderBrush" Value="#D1D5DB"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="14,10"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
+            <Setter Property="Background"       Value="#F8FAFC"/>
+            <Setter Property="Foreground"       Value="#0F172A"/>
+            <Setter Property="CaretBrush"       Value="{StaticResource AccentBlue}"/>
+            <Setter Property="BorderBrush"      Value="#CBD5E1"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="Padding"          Value="12,9"/>
+            <Setter Property="FontSize"         Value="13"/>
+            <Setter Property="FontFamily"       Value="Segoe UI"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="16" Padding="{TemplateBinding Padding}">
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
                             <Grid>
-                                <TextBlock Text="{TemplateBinding Tag}" Foreground="#9CA3AF"
+                                <TextBlock Text="{TemplateBinding Tag}" Foreground="#94A3B8"
                                            VerticalAlignment="Center" FontSize="12"
                                            Visibility="{Binding Text.IsEmpty, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolToVisibility}}"/>
                                 <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
@@ -86,9 +96,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#3B82F6"/>
-                                <Setter TargetName="Bd" Property="Effect" Value="{StaticResource GlowBlue}"/>
-                                <Setter TargetName="Bd" Property="Background" Value="#F8FAFC"/>
+                                <Setter TargetName="Bd" Property="BorderBrush"  Value="#1D4ED8"/>
+                                <Setter TargetName="Bd" Property="Background"   Value="#FFFFFF"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -98,28 +107,27 @@
 
         <!-- ===== ModernPasswordBox ===== -->
         <Style x:Key="ModernPasswordBox" TargetType="PasswordBox">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="Foreground" Value="#374151"/>
-            <Setter Property="CaretBrush" Value="{StaticResource AccentGreen}"/>
-            <Setter Property="BorderBrush" Value="#D1D5DB"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="14,10"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
+            <Setter Property="Background"       Value="#F8FAFC"/>
+            <Setter Property="Foreground"       Value="#0F172A"/>
+            <Setter Property="CaretBrush"       Value="{StaticResource AccentBlue}"/>
+            <Setter Property="BorderBrush"      Value="#CBD5E1"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="Padding"          Value="12,9"/>
+            <Setter Property="FontSize"         Value="13"/>
+            <Setter Property="FontFamily"       Value="Segoe UI"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="PasswordBox">
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="16" Padding="{TemplateBinding Padding}">
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
                             <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#3B82F6"/>
-                                <Setter TargetName="Bd" Property="Effect" Value="{StaticResource GlowBlue}"/>
-                                <Setter TargetName="Bd" Property="Background" Value="#F8FAFC"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#1D4ED8"/>
+                                <Setter TargetName="Bd" Property="Background"  Value="#FFFFFF"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -129,27 +137,27 @@
 
         <!-- ===== ModernComboBox ===== -->
         <Style x:Key="ModernComboBox" TargetType="ComboBox">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="Foreground" Value="#374151"/>
-            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="Background"      Value="#F8FAFC"/>
+            <Setter Property="Foreground"      Value="#0F172A"/>
+            <Setter Property="BorderBrush"     Value="#CBD5E1"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="12,8"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
+            <Setter Property="Padding"         Value="12,8"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
                     <Style TargetType="ComboBoxItem">
-                        <Setter Property="Foreground" Value="#374151"/>
-                        <Setter Property="Background" Value="#F9FAFB"/>
-                        <Setter Property="Padding" Value="10,6"/>
+                        <Setter Property="Foreground"  Value="#0F172A"/>
+                        <Setter Property="Background"  Value="#FFFFFF"/>
+                        <Setter Property="Padding"     Value="10,6"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#DBEAFE"/>
-                                <Setter Property="Foreground" Value="#1F2937"/>
+                                <Setter Property="Foreground" Value="#1D4ED8"/>
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="#BFDBFE"/>
-                                <Setter Property="Foreground" Value="#1F2937"/>
+                                <Setter Property="Foreground" Value="#1D4ED8"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -159,28 +167,28 @@
 
         <!-- ===== ModernDatePicker ===== -->
         <Style x:Key="ModernDatePicker" TargetType="DatePicker">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="Foreground" Value="#374151"/>
-            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="Background"      Value="#F8FAFC"/>
+            <Setter Property="Foreground"      Value="#0F172A"/>
+            <Setter Property="BorderBrush"     Value="#CBD5E1"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8,6"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
+            <Setter Property="Padding"         Value="8,6"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
         </Style>
 
         <!-- ===== Button Base ===== -->
         <Style x:Key="BaseButton" TargetType="Button">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="16,10"/>
-            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="FontWeight"      Value="SemiBold"/>
+            <Setter Property="Padding"         Value="16,9"/>
+            <Setter Property="Cursor"          Value="Hand"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                CornerRadius="20" Padding="{TemplateBinding Padding}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}"
                                 RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
                                 <ScaleTransform ScaleX="1" ScaleY="1"/>
@@ -189,19 +197,15 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Opacity" Value="0.92"/>
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.90"/>
                                 <Setter TargetName="Bd" Property="RenderTransform">
-                                    <Setter.Value>
-                                        <ScaleTransform ScaleX="1.04" ScaleY="1.04"/>
-                                    </Setter.Value>
+                                    <Setter.Value><ScaleTransform ScaleX="1.02" ScaleY="1.02"/></Setter.Value>
                                 </Setter>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bd" Property="Opacity" Value="0.82"/>
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.80"/>
                                 <Setter TargetName="Bd" Property="RenderTransform">
-                                    <Setter.Value>
-                                        <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
-                                    </Setter.Value>
+                                    <Setter.Value><ScaleTransform ScaleX="0.98" ScaleY="0.98"/></Setter.Value>
                                 </Setter>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -212,186 +216,88 @@
 
         <!-- Primary (Blue) -->
         <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
-            <Setter Property="Background" Value="{DynamicResource AccentPrimary}"/>
-            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Background" Value="#1D4ED8"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
         </Style>
 
-        <!-- Success (Green) -->
+        <!-- Success (Emerald) -->
         <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
-            <Setter Property="Background" Value="#10B981"/>
-            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Background" Value="#059669"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
         </Style>
 
-        <!-- Warning (Orange) -->
+        <!-- Warning (Amber) -->
         <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
-            <Setter Property="Background" Value="#F97316"/>
-            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Background" Value="#D97706"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
         </Style>
 
-        <!-- Danger (Pink) -->
+        <!-- Danger (Red) -->
         <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
-            <Setter Property="Background" Value="#F472B6"/>
-            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Background" Value="#DC2626"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
         </Style>
 
-        <!-- Secondary (Soft outline) -->
+        <!-- Secondary -->
         <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
-            <Setter Property="Background" Value="#E5E7EB"/>
-            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="Background" Value="#E2E8F0"/>
+            <Setter Property="Foreground" Value="#475569"/>
         </Style>
 
-        <!-- Small Button -->
+        <!-- Small (chip-like) -->
         <Style x:Key="SmallButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
             <Setter Property="Background" Value="#DBEAFE"/>
             <Setter Property="Foreground" Value="#1D4ED8"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize"   Value="11"/>
+            <Setter Property="Padding"    Value="10,5"/>
         </Style>
 
-        <!-- Cute Button -->
+        <!-- CuteButton → now professional primary -->
         <Style x:Key="CuteButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#F472B6" Offset="0"/>
-                        <GradientStop Color="#EC4899" Offset="1"/>
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Background" Value="#1D4ED8"/>
             <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="Heavy"/>
-            <Setter Property="Padding" Value="16,12"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize"   Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding"    Value="16,10"/>
         </Style>
 
-        <!-- Sidebar Button -->
+        <!-- ===== Sidebar Button (dark sidebar) ===== -->
         <Style x:Key="SidebarButton" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#374151"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="Background"                Value="Transparent"/>
+            <Setter Property="Foreground"                Value="#94A3B8"/>
+            <Setter Property="FontSize"                  Value="14"/>
+            <Setter Property="Padding"                   Value="14,11"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
+            <Setter Property="Cursor"                    Value="Hand"/>
+            <Setter Property="FontFamily"                Value="Segoe UI"/>
+            <Setter Property="BorderThickness"           Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid>
-                            <Border x:Name="GlowBg" Background="#FEF3C7" Opacity="0" CornerRadius="12" Margin="0,2"/>
                             <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                    CornerRadius="12" Padding="{TemplateBinding Padding}" Margin="0,2">
+                                    CornerRadius="8" Padding="{TemplateBinding Padding}" Margin="0,2">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border x:Name="NeonIndicator" Grid.Column="0" Width="4" Height="20"
-                                            Background="{DynamicResource AccentPrimary}" CornerRadius="2" Margin="-8,0,12,0"
-                                            Opacity="0" Effect="{StaticResource GlowGreen}"/>
-                                    <ContentPresenter Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    <Border x:Name="Indicator" Grid.Column="0" Width="3" Height="18"
+                                            Background="#1D4ED8" CornerRadius="2" Margin="-6,0,10,0" Opacity="0"/>
+                                    <ContentPresenter Grid.Column="1"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                       VerticalAlignment="Center"/>
                                 </Grid>
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#F0FDF4"/>
-                                <Setter Property="Foreground" Value="{DynamicResource AccentPrimary}"/>
-                                <Setter TargetName="NeonIndicator" Property="Opacity" Value="1"/>
-                                <Setter TargetName="GlowBg" Property="Opacity" Value="0.6"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#DCFCE7"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Sidebar Button for Logs (Soft Pink Hover) -->
-        <Style x:Key="SidebarLogButton" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#374151"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Padding" Value="16,12"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border x:Name="GlowBg" Background="#FCE7F3" Opacity="0" CornerRadius="12" Margin="0,2"/>
-                            <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                    CornerRadius="12" Padding="{TemplateBinding Padding}" Margin="0,2">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border x:Name="NeonIndicator" Grid.Column="0" Width="4" Height="20"
-                                            Background="#F472B6" CornerRadius="2" Margin="-8,0,12,0"
-                                            Opacity="0" Effect="{StaticResource GlowPurple}"/>
-                                    <ContentPresenter Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#FDF2F8"/>
-                                <Setter Property="Foreground" Value="#F472B6"/>
-                                <Setter TargetName="NeonIndicator" Property="Opacity" Value="1"/>
-                                <Setter TargetName="GlowBg" Property="Opacity" Value="0.6"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#FCE7F3"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Sidebar Button for Suppliers (Pastel Blue Hover) -->
-        <Style x:Key="SidebarSupplierButton" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#374151"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Padding" Value="16,12"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border x:Name="GlowBg" Background="#DBEAFE" Opacity="0" CornerRadius="12" Margin="0,2"/>
-                            <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                    CornerRadius="12" Padding="{TemplateBinding Padding}" Margin="0,2">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border x:Name="Indicator" Grid.Column="0" Width="4" Height="20"
-                                            Background="#3B82F6" CornerRadius="2" Margin="-8,0,12,0" Opacity="0"/>
-                                    <ContentPresenter Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#EFF6FF"/>
-                                <Setter Property="Foreground" Value="#3B82F6"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#1E293B"/>
+                                <Setter Property="Foreground" Value="#E2E8F0"/>
                                 <Setter TargetName="Indicator" Property="Opacity" Value="1"/>
-                                <Setter TargetName="GlowBg" Property="Opacity" Value="0.6"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#DBEAFE"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#334155"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -399,79 +305,22 @@
             </Setter>
         </Style>
 
-        <!-- Sidebar Button for Settings (Pastel Yellow Hover) -->
-        <Style x:Key="SidebarSettingsButton" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#374151"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Padding" Value="16,12"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border x:Name="GlowBg" Background="#FEF3C7" Opacity="0" CornerRadius="12" Margin="0,2"/>
-                            <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                    CornerRadius="12" Padding="{TemplateBinding Padding}" Margin="0,2">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border x:Name="Indicator" Grid.Column="0" Width="4" Height="20"
-                                            Background="#F59E0B" CornerRadius="2" Margin="-8,0,12,0" Opacity="0"/>
-                                    <ContentPresenter Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#FFFBEB"/>
-                                <Setter Property="Foreground" Value="#F59E0B"/>
-                                <Setter TargetName="Indicator" Property="Opacity" Value="1"/>
-                                <Setter TargetName="GlowBg" Property="Opacity" Value="0.6"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#FEF3C7"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <!-- Supplier sidebar btn — same as main -->
+        <Style x:Key="SidebarSupplierButton" TargetType="Button" BasedOn="{StaticResource SidebarButton}"/>
+
+        <!-- Logs sidebar btn -->
+        <Style x:Key="SidebarLogButton" TargetType="Button" BasedOn="{StaticResource SidebarButton}"/>
+
+        <!-- Settings sidebar btn -->
+        <Style x:Key="SidebarSettingsButton" TargetType="Button" BasedOn="{StaticResource SidebarButton}"/>
 
         <!-- Test / Demo Button -->
-        <Style x:Key="TestButton" TargetType="Button">
-            <Setter Property="Background" Value="#FDBA74"/>
-            <Setter Property="Foreground" Value="#7C2D12"/>
-            <Setter Property="FontSize" Value="14"/>
+        <Style x:Key="TestButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Background" Value="#D97706"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontSize"   Value="13"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Padding" Value="16,12"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontFamily" Value="Poppins"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                BorderThickness="0" CornerRadius="18" Padding="{TemplateBinding Padding}"
-                                Effect="{StaticResource GlowOrange}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#FED7AA"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#FDBA74"/>
-                                <Setter TargetName="Bd" Property="Effect" Value="{x:Null}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Padding"    Value="16,10"/>
         </Style>
     </Application.Resources>
 </Application>

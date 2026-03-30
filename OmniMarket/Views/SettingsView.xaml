@@ -3,135 +3,258 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <UserControl.Resources>
-        <Style x:Key="ThemeColorButton" TargetType="Button">
-            <Setter Property="Width" Value="26"/>
-            <Setter Property="Height" Value="26"/>
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="BorderBrush" Value="#FFFFFF"/>
+        <!-- Tab button style -->
+        <Style x:Key="TabBtn" TargetType="Button">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="Foreground"      Value="{StaticResource TextMuted}"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="FontWeight"      Value="SemiBold"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
+            <Setter Property="Padding"         Value="18,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="13" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0,0,0,2" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource CorpBlue}"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#F0F7FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Label style for settings fields -->
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground"  Value="{StaticResource TextMuted}"/>
+            <Setter Property="FontSize"    Value="11"/>
+            <Setter Property="FontWeight"  Value="SemiBold"/>
+            <Setter Property="Margin"      Value="0,0,0,4"/>
+        </Style>
+
+        <!-- Toggle switch-like checkbox -->
+        <Style x:Key="ToggleCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground"      Value="{StaticResource TextPrimary}"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
     </UserControl.Resources>
 
-    <Grid>
-        <!-- Cute Vibrant Background Gradient -->
-        <Grid.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#FFEDFA" Offset="0"/>
-                <GradientStop Color="#FFF2E8" Offset="0.5"/>
-                <GradientStop Color="#EAF2FF" Offset="1"/>
-            </LinearGradientBrush>
-        </Grid.Background>
-
-        <!-- Blobs for "Süslü" look -->
-        <Grid IsHitTestVisible="False" ClipToBounds="True">
-            <Ellipse Width="400" Height="400" Fill="#FFD1E8" Opacity="0.5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-100,-100,0,0">
-                <Ellipse.Effect><BlurEffect Radius="80"/></Ellipse.Effect>
-            </Ellipse>
-            <Ellipse Width="500" Height="500" Fill="#D1E8FF" Opacity="0.5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-150,-150">
-                <Ellipse.Effect><BlurEffect Radius="100"/></Ellipse.Effect>
-            </Ellipse>
-        </Grid>
-
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <Grid Margin="24">
+    <Grid Background="{StaticResource CorpBackground}">
+        <Grid Margin="28">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Header -->
+            <!-- Page Header -->
             <StackPanel Grid.Row="0" Margin="0,0,0,20">
-                <TextBlock Text="Ayarlar &amp; Profil 🌸" FontSize="32" FontWeight="Heavy" FontFamily="Comic Sans MS, Segoe UI Print, Segoe UI" Foreground="#EC4899"/>
-                <TextBlock Text="Marketinizin ayarlarını buradan yönetin ✨" FontSize="15" Foreground="#9CA3AF" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                <TextBlock Text="Ayarlar" FontSize="28" FontWeight="Bold"
+                           FontFamily="Segoe UI" Foreground="{StaticResource TextPrimary}"/>
+                <TextBlock Text="Market profilinizi ve sistem parametrelerinizi yönetin"
+                           FontSize="13" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
             </StackPanel>
 
-            <!-- Profile Card -->
-            <Border Grid.Row="1" Style="{StaticResource GlassmorphismPanel}" Padding="24" Margin="0,0,0,20"
-                    Effect="{StaticResource CardShadow}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border Width="72" Height="72" CornerRadius="24" Background="#FFD1E8" Margin="0,0,16,0">
-                        <TextBlock Text="🌸" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding MarketAdi}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                        <TextBlock Text=" Market Profili ✨" FontSize="13" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- Form -->
-            <Border Grid.Row="2" Style="{StaticResource GlassmorphismPanel}" Padding="24" Effect="{StaticResource CardShadow}">
-                <StackPanel>
-                    <TextBlock Text="Profil Bilgileri" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,16"/>
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,12">
-                            <TextBlock Text="Market Ad&#305; G&#252;ncelle" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding MarketAdi}" Style="{StaticResource ModernTextBox}"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="4,0,0,12">
-                            <TextBlock Text="Eski Şifre" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
-                            <PasswordBox x:Name="OldPasswordBox" Style="{StaticResource ModernPasswordBox}"
-                                         PasswordChanged="OldPasswordBox_OnPasswordChanged"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,12">
-                            <TextBlock Text="Adres Bilgisi" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding Adres}" Style="{StaticResource ModernTextBox}"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,8,12">
-                            <TextBlock Text="Yeni Şifre" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
-                            <PasswordBox x:Name="NewPasswordBox" Style="{StaticResource ModernPasswordBox}"
-                                         PasswordChanged="NewPasswordBox_OnPasswordChanged"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2" Grid.Column="1" Margin="4,0,0,12">
-                            <TextBlock Text="Yeni Şifre Tekrar" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
-                            <PasswordBox x:Name="ConfirmPasswordBox" Style="{StaticResource ModernPasswordBox}"
-                                         PasswordChanged="ConfirmPasswordBox_OnPasswordChanged"/>
-                        </StackPanel>
-
-                        <!-- Tema Seçici Kaldırıldı -->
-
-                        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="✨ Kaydet ✨" Command="{Binding SaveCommand}" Style="{StaticResource CuteButton}" Padding="20,12">
-                                <Button.Effect>
-                                    <DropShadowEffect BlurRadius="15" Color="#F472B6" ShadowDepth="4" Opacity="0.4"/>
-                                </Button.Effect>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
+            <!-- Tab Bar -->
+            <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1"
+                    CornerRadius="12,12,0,0" Margin="0,0,0,0" Padding="8,0">
+                <StackPanel Orientation="Horizontal">
+                    <Button Style="{StaticResource TabBtn}" Content="▦  Genel Ayarlar"
+                            x:Name="TabGeneral"
+                            Click="Tab_Click" Tag="General"/>
+                    <Button Style="{StaticResource TabBtn}" Content="◉  Profil"
+                            x:Name="TabProfile"
+                            Click="Tab_Click" Tag="Profile"/>
+                    <Button Style="{StaticResource TabBtn}" Content="⚙  Sistem Parametreleri"
+                            x:Name="TabSystem"
+                            Click="Tab_Click" Tag="System"/>
                 </StackPanel>
             </Border>
+
+            <!-- Tab Content -->
+            <Border Grid.Row="2" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1"
+                    CornerRadius="0,0,12,12" Padding="28" Effect="{StaticResource CardShadow}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid>
+
+                        <!-- ══ TAB 1: Genel Ayarlar ══ -->
+                        <StackPanel x:Name="PanelGeneral" Visibility="Visible">
+                            <TextBlock Text="Genel Ayarlar" FontSize="17" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}" Margin="0,0,0,20"/>
+
+                            <!-- Market profil kartı -->
+                            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"
+                                    CornerRadius="12" Padding="20" Margin="0,0,0,18">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="60" Height="60" CornerRadius="14"
+                                            Background="{StaticResource CorpBlueSoft}" Margin="0,0,20,0">
+                                        <TextBlock Text="📦" FontSize="28"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding MarketAdi}" FontSize="18" FontWeight="Bold"
+                                                   Foreground="{StaticResource TextPrimary}"/>
+                                        <TextBlock Text="Market Profili" FontSize="12"
+                                                   Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,14">
+                                    <TextBlock Text="Market Adı" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox Text="{Binding MarketAdi}" Style="{StaticResource ModernTextBox}"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,14">
+                                    <TextBlock Text="Adres" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox Text="{Binding Adres}" Style="{StaticResource ModernTextBox}"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                            Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Content="Kaydet" Command="{Binding SaveCommand}"
+                                            Style="{StaticResource SuccessButton}" Width="120"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- ══ TAB 2: Profil / Şifre ══ -->
+                        <StackPanel x:Name="PanelProfile" Visibility="Collapsed">
+                            <TextBlock Text="Profil &amp; Güvenlik" FontSize="17" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}" Margin="0,0,0,20"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,14">
+                                    <TextBlock Text="Eski Şifre" Style="{StaticResource FieldLabel}"/>
+                                    <PasswordBox x:Name="OldPasswordBox" Style="{StaticResource ModernPasswordBox}"
+                                                 PasswordChanged="OldPasswordBox_OnPasswordChanged"/>
+                                </StackPanel>
+
+                                <Border Grid.Row="0" Grid.Column="1" Background="#FFFBEB"
+                                        BorderBrush="#FDE68A" BorderThickness="1" CornerRadius="8"
+                                        Padding="14,10" Margin="10,0,0,14" VerticalAlignment="Center">
+                                    <TextBlock Text="Şifre değiştirmek için 3 alanı da doldurun. Boş bırakırsanız mevcut şifre korunur."
+                                               Foreground="#92400E" FontSize="12" TextWrapping="Wrap"/>
+                                </Border>
+
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,14">
+                                    <TextBlock Text="Yeni Şifre" Style="{StaticResource FieldLabel}"/>
+                                    <PasswordBox x:Name="NewPasswordBox" Style="{StaticResource ModernPasswordBox}"
+                                                 PasswordChanged="NewPasswordBox_OnPasswordChanged"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,14">
+                                    <TextBlock Text="Yeni Şifre Tekrar" Style="{StaticResource FieldLabel}"/>
+                                    <PasswordBox x:Name="ConfirmPasswordBox" Style="{StaticResource ModernPasswordBox}"
+                                                 PasswordChanged="ConfirmPasswordBox_OnPasswordChanged"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                                            Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                    <Button Content="Kaydet" Command="{Binding SaveCommand}"
+                                            Style="{StaticResource SuccessButton}" Width="120"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- ══ TAB 4: Sistem ══ -->
+                        <StackPanel x:Name="PanelSystem" Visibility="Collapsed">
+                            <TextBlock Text="Sistem Parametreleri" FontSize="17" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}" Margin="0,0,0,20"/>
+
+                            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"
+                                    CornerRadius="12" Padding="20">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,16">
+                                        <TextBlock Text="Para Birimi" Style="{StaticResource FieldLabel}"/>
+                                        <ComboBox Style="{StaticResource ModernComboBox}" SelectedIndex="0">
+                                            <ComboBoxItem Content="₺ Türk Lirası (TRY)"/>
+                                            <ComboBoxItem Content="$ Dolar (USD)"/>
+                                            <ComboBoxItem Content="€ Euro (EUR)"/>
+                                        </ComboBox>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,16">
+                                        <TextBlock Text="Kritik Stok Eşiği (adet)" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox Text="5" Style="{StaticResource ModernTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,16">
+                                        <TextBlock Text="SKT Uyarı Eşiği (gün)" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox Text="7" Style="{StaticResource ModernTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,16">
+                                        <TextBlock Text="Dil" Style="{StaticResource FieldLabel}"/>
+                                        <ComboBox Style="{StaticResource ModernComboBox}" SelectedIndex="0">
+                                            <ComboBoxItem Content="Türkçe"/>
+                                            <ComboBoxItem Content="English"/>
+                                        </ComboBox>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,10,16">
+                                        <TextBlock Text="Zayiat Uyarı Eşiği (%)" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox Text="15" Style="{StaticResource ModernTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                                                Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Content="Varsayılana Döndür" Style="{StaticResource SecondaryButton}"
+                                                Width="160" Margin="0,0,8,0"/>
+                                        <Button Content="Kaydet" Style="{StaticResource SuccessButton}" Width="110"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
         </Grid>
-    </ScrollViewer>
     </Grid>
 </UserControl>

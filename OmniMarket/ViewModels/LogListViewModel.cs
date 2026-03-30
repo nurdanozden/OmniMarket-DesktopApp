@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows.Data;
 using OmniMarket.Helpers;
 using OmniMarket.Models;
@@ -33,8 +33,25 @@ public class LogListViewModel : BaseViewModel
     public ObservableCollection<Log> AllLogs
     {
         get => _allLogs;
-        set => SetProperty(ref _allLogs, value);
+        set
+        {
+            SetProperty(ref _allLogs, value);
+            OnPropertyChanged(nameof(AddCount));
+            OnPropertyChanged(nameof(UpdateCount));
+            OnPropertyChanged(nameof(DeleteCount));
+            OnPropertyChanged(nameof(StokCikisiCount));
+            OnPropertyChanged(nameof(ReturnCount));
+            OnPropertyChanged(nameof(CampaignCount));
+        }
     }
+
+    public int AddCount           => _allLogs.Count(l => l.IslemTipi == OmniMarket.Models.LogType.Ekleme);
+    public int UpdateCount        => _allLogs.Count(l => l.IslemTipi == OmniMarket.Models.LogType.Guncelleme
+                                                      || l.IslemTipi == OmniMarket.Models.LogType.FiyatGuncelleme);
+    public int DeleteCount        => _allLogs.Count(l => l.IslemTipi == OmniMarket.Models.LogType.Silme);
+    public int StokCikisiCount    => _allLogs.Count(l => l.IslemTipi == OmniMarket.Models.LogType.StokCikisi);
+    public int ReturnCount        => _allLogs.Count(l => l.IslemTipi == OmniMarket.Models.LogType.UrunIade);
+    public int CampaignCount      => _allLogs.Count(l => l.IslemTipi == OmniMarket.Models.LogType.Kampanya);
 
     public LogListViewModel()
     {

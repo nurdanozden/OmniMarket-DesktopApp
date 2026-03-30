@@ -1,4 +1,4 @@
-﻿using OmniMarket.Helpers;
+using OmniMarket.Helpers;
 using OmniMarket.Models;
 
 namespace OmniMarket.ViewModels;
