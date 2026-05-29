@@ -11,16 +11,14 @@ public static class DataSeeder
         var products = context.Products.ToList();
         if (!products.Any()) return;
 
-        // Sistemdeki ürünleri Kategori'ye göre grupla
         var groupedByCategory = products.GroupBy(p => p.Category);
 
         foreach (var categoryGroup in groupedByCategory)
         {
-            // Kategorideki benzersiz ürün isimlerini karıştır
+
             var groupedByName = categoryGroup.GroupBy(p => p.Name).OrderBy(x => _rng.Next()).ToList();
             int total = groupedByName.Count;
 
-            // Dağılım: %25 geçmiş | %35 yaklaşan (3-7 gün) | %40 normal
             int pastCount     = (int)Math.Ceiling(total * 0.25);
             int approachCount = (int)Math.Ceiling(total * 0.35);
 
@@ -31,24 +29,23 @@ public static class DataSeeder
 
                 if (i < pastCount)
                 {
-                    // 🔴 SKT geçmiş (-1 ila -30 gün)
+
                     newExpiryDate = DateTime.SpecifyKind(
                         DateTime.Today.AddDays(-_rng.Next(1, 31)), DateTimeKind.Utc);
                 }
                 else if (i < pastCount + approachCount)
                 {
-                    // 🟡 SKT yaklaşıyor (bugün + 3 ila 7 gün)
+
                     newExpiryDate = DateTime.SpecifyKind(
                         DateTime.Today.AddDays(_rng.Next(3, 8)), DateTimeKind.Utc);
                 }
                 else
                 {
-                    // 🟢 Normal (bugün + 30 ila 180 gün)
+
                     newExpiryDate = DateTime.SpecifyKind(
                         DateTime.Today.AddDays(_rng.Next(30, 181)), DateTimeKind.Utc);
                 }
 
-                // Aynı isimdeki tüm ürün kayıtlarına aynı SKT'yi ata
                 foreach (var p in nameGroup)
                 {
                     p.ExpiryDate = newExpiryDate;
@@ -73,7 +70,7 @@ public static class DataSeeder
 
             if (!marketSuppliers.Any())
             {
-                // Create a default supplier if none exists at all
+
                 var defaultSupplier = new Tedarikci
                 {
                     Ad = "Genel Tedarikçi",
@@ -87,7 +84,6 @@ public static class DataSeeder
                 marketSuppliers.Add(defaultSupplier);
             }
 
-            // Assign products to a random supplier or default
             foreach (var p in mProducts)
             {
                 p.TedarikciId = marketSuppliers[_rng.Next(marketSuppliers.Count)].Id;
@@ -101,7 +97,7 @@ public static class DataSeeder
     {
         if (!context.Markets.Any())
         {
-            // ─── Marketler ───
+
             var nurMarket = new Market
             {
                 Name = "NUR MARKET",
@@ -120,7 +116,6 @@ public static class DataSeeder
             context.Markets.Add(demoMarket);
             context.SaveChanges();
 
-            // ─── Ürünler ───
             var productTemplates = GetProductTemplates();
             var supplierTemplates = GetSupplierTemplates();
 
@@ -161,7 +156,6 @@ public static class DataSeeder
             context.SaveChanges();
         }
 
-        // ─── Loglar ───
         if (context.Logs.Count() < 20)
         {
             var adminMarket = context.Markets.FirstOrDefault(m => m.Username == "nur");
@@ -170,13 +164,12 @@ public static class DataSeeder
                 var now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
                 var logs = new List<Log>
                 {
-                    // Login kayıtları
+
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Login,
                         Detay = "Sisteme giriş yapıldı.", Tarih = now.AddDays(-7) },
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "demo", IslemTipi = LogType.Login,
                         Detay = "Demo hesabı ile sisteme giriş yapıldı.", Tarih = now.AddDays(-5) },
 
-                    // Ürün ekleme
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Ekleme,
                         Detay = "'Günlük Süt 1L' ürünü sisteme eklendi.",
                         YeniDeger = "Stok: 120 | Alış: 18,50₺ | Satış: 24,00₺", Tarih = now.AddDays(-6).AddHours(9) },
@@ -187,7 +180,6 @@ public static class DataSeeder
                         Detay = "'Sütaş Yoğurt 2kg' ürünü sisteme eklendi.",
                         YeniDeger = "Stok: 35 | Alış: 45,00₺ | Satış: 58,00₺", Tarih = now.AddDays(-5).AddHours(8) },
 
-                    // Fiyat güncellemeleri
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.FiyatGuncelleme,
                         Detay = "'Ekmek (200g)' ürününün satış fiyatı güncellendi.",
                         EskiDeger = "Satış Fiyatı: 8,00₺", YeniDeger = "Satış Fiyatı: 9,50₺", Tarih = now.AddDays(-4).AddHours(11) },
@@ -198,7 +190,6 @@ public static class DataSeeder
                         Detay = "SKT yaklaşan 12 ürüne %15 kampanya indirimi satış fiyatına yansıtıldı.",
                         EskiDeger = "İndirim: %0", YeniDeger = "İndirim: %15", Tarih = now.AddDays(-2).AddHours(9) },
 
-                    // Stok çıkış kayıtları
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.StokCikisi,
                         Detay = "'Yumurta (15'li)' satışı nedeniyle stok güncellendi.",
                         EskiDeger = "Stok: 24", YeniDeger = "Stok: 18", Tarih = now.AddDays(-4).AddHours(16) },
@@ -209,12 +200,10 @@ public static class DataSeeder
                         Detay = "'Ekmek (200g)' satışı nedeniyle stok güncellendi.",
                         EskiDeger = "Stok: 85", YeniDeger = "Stok: 70", Tarih = now.AddDays(-1).AddHours(10) },
 
-                    // Kampanya
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Kampanya,
                         Detay = "SKT yaklaşan 8 ürüne kampanya başlatıldı.",
                         EskiDeger = "İndirim: Yok", YeniDeger = "İndirim: %20 | Hedef: SKT < 7 Gün", Tarih = now.AddDays(-2).AddHours(15) },
 
-                    // İade talebi
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.UrunIade,
                         Detay = "'Sütaş Yoğurt 2kg' tedarikçiye iade listesine alındı.",
                         EskiDeger = "İade Durumu: Hayır", YeniDeger = "İade Durumu: Evet (SKT: Geçmiş)", Tarih = now.AddDays(-1).AddHours(17) },
@@ -222,17 +211,14 @@ public static class DataSeeder
                         Detay = "3 ürün için tedarikçi iade talebi oluşturuldu.",
                         EskiDeger = "İade Talebi: Yok", YeniDeger = "İade Talebi: Oluşturuldu (Tedarikçi: Özden Süt)", Tarih = now.AddHours(-3) },
 
-                    // Güncelleme
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Guncelleme,
                         Detay = "'Çaykur Rize Turist Çay 500g' stok miktarı güncellendi (sayım sonrası).",
                         EskiDeger = "Stok: 48", YeniDeger = "Stok: 52", Tarih = now.AddDays(-1).AddHours(9) },
 
-                    // Silme
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Silme,
                         Detay = "'Test Ürünü' kaydı sistemden silindi (hatalı giriş).",
                         EskiDeger = "Ürün: Test Ürünü | Stok: 0", Tarih = now.AddDays(-3).AddHours(13) },
 
-                    // Güncel login
                     new Log { MarketId = adminMarket.Id, KullaniciAdi = "nur", IslemTipi = LogType.Login,
                         Detay = "Sisteme giriş yapıldı.", Tarih = now.AddHours(-1) },
                 };
@@ -250,7 +236,7 @@ public static class DataSeeder
         {
             var (name, category) = templates[_rng.Next(templates.Count)];
             var purchasePrice = Math.Round((decimal)(_rng.NextDouble() * 95 + 5), 2);
-            var markup = 1.0m + (decimal)(_rng.NextDouble() * 0.3 + 0.1); // %10-%40
+            var markup = 1.0m + (decimal)(_rng.NextDouble() * 0.3 + 0.1);
             var salePrice = Math.Round(purchasePrice * markup, 2);
             var supplier = GetSupplierForCategory(suppliers, category) ?? defaultSupplier;
 
@@ -317,43 +303,41 @@ public static class DataSeeder
         return defaultSupplier;
     }
 
-    /// <summary>
-    /// SKT dağılımı: %25 geçmiş, %35 yaklaşan, %40 normal
-    /// </summary>
+
+
     private static DateTime GetRandomExpiryDate(int index, int total)
     {
         double ratio = (double)index / total;
 
         if (ratio < 0.25)
         {
-            // 🔴 SKT geçmiş (1-30 gün önce)
+
             return DateTime.Today.AddDays(-_rng.Next(1, 31));
         }
         else if (ratio < 0.60)
         {
-            // 🟡 SKT yaklaşıyor (bugün + 1-7 gün)
+
             return DateTime.Today.AddDays(_rng.Next(1, 8));
         }
         else
         {
-            // 🟢 Normal (bugün + 8-60 gün)
+
             return DateTime.Today.AddDays(_rng.Next(8, 61));
         }
     }
 
-    /// <summary>
-    /// Stok dağılımı: %20 kritik(1-5), %50 orta(6-20), %30 yüksek(20-100)
-    /// </summary>
+
+
     private static int GetRandomStock(int index, int total)
     {
         double ratio = (double)index / total;
 
         if (ratio < 0.20)
-            return _rng.Next(1, 6);       // Kritik
+            return _rng.Next(1, 6);
         else if (ratio < 0.70)
-            return _rng.Next(6, 21);      // Orta
+            return _rng.Next(6, 21);
         else
-            return _rng.Next(20, 101);    // Yüksek
+            return _rng.Next(20, 101);
     }
 
     private static string GenerateBarcode()
@@ -365,20 +349,18 @@ public static class DataSeeder
     {
         return new List<(string, string)>
         {
-            // Fırın
+
             ("Ekmek (200g)", "Fırın"),
             ("Simit (Susamlı)", "Fırın"),
             ("Poğaça (Peynirli)", "Fırın"),
             ("Açma (Tereyağlı)", "Fırın"),
 
-            // Meyve & Sebze
             ("Domates (Salkım)", "Meyve & Sebze"),
             ("Salatalık", "Meyve & Sebze"),
             ("Biber (Çarliston)", "Meyve & Sebze"),
             ("Patates", "Meyve & Sebze"),
             ("Soğan", "Meyve & Sebze"),
 
-            // Süt
             ("Günlük Süt 1L", "Süt"),
             ("1L Laktozsuz Süt", "Süt"),
             ("Sütaş Yoğurt 2kg", "Süt"),
@@ -388,13 +370,11 @@ public static class DataSeeder
             ("1kg Süzme Yoğurt", "Süt"),
             ("200ml Krema", "Süt"),
 
-            // Kahvaltılık
             ("Yumurta (15'li)", "Kahvaltılık"),
             ("Zeytin (Siyah) 500g", "Kahvaltılık"),
             ("Bal 450g", "Kahvaltılık"),
             ("Reçel 380g", "Kahvaltılık"),
 
-            // İçecek
             ("5L Su", "İçecek"),
             ("1.5L Maden Suyu", "İçecek"),
             ("1L Portakal Suyu", "İçecek"),
@@ -404,7 +384,6 @@ public static class DataSeeder
             ("500ml Ayran", "İçecek"),
             ("1L Şeftali Çayı", "İçecek"),
 
-            // Atıştırmalık
             ("150g Patates Cipsi", "Atıştırmalık"),
             ("100g Çikolata", "Atıştırmalık"),
             ("200g Bisküvi", "Atıştırmalık"),
@@ -413,7 +392,6 @@ public static class DataSeeder
             ("300g Kraker", "Atıştırmalık"),
             ("120g Kek", "Atıştırmalık"),
 
-            // Temizlik
             ("1L Bulaşık Deterjanı", "Temizlik"),
             ("3L Çamaşır Deterjanı", "Temizlik"),
             ("750ml Yüzey Temizleyici", "Temizlik"),
@@ -421,7 +399,6 @@ public static class DataSeeder
             ("500ml El Sabunu", "Temizlik"),
             ("4'lü Tuvalet Kağıdı", "Temizlik"),
 
-            // Bakliyat
             ("1kg Kırmızı Mercimek", "Bakliyat"),
             ("1kg Pirinç", "Bakliyat"),
             ("1kg Bulgur", "Bakliyat"),
@@ -430,12 +407,10 @@ public static class DataSeeder
             ("500g Yeşil Mercimek", "Bakliyat"),
             ("1kg Makarna", "Bakliyat"),
 
-            // Çay & Kahve
             ("Çaykur Rize Turist Çay 500g", "Çay & Kahve"),
             ("Türk Kahvesi 100g", "Çay & Kahve"),
             ("Filtre Kahve 250g", "Çay & Kahve"),
 
-            // Dondurulmuş Gıda
             ("1L Dondurma", "Dondurulmuş Gıda"),
             ("400g Dondurulmuş Bezelye", "Dondurulmuş Gıda"),
             ("500g Dondurulmuş Patates", "Dondurulmuş Gıda"),
@@ -476,3 +451,4 @@ public static class DataSeeder
         };
     }
 }
+

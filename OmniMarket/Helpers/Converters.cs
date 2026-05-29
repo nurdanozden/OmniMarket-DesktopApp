@@ -5,9 +5,8 @@ using System.Windows.Media;
 
 namespace OmniMarket.Helpers;
 
-/// <summary>
-/// String boş değilse Visible, boşsa Collapsed döndürür.
-/// </summary>
+
+
 public class StringToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -21,9 +20,8 @@ public class StringToVisibilityConverter : IValueConverter
     }
 }
 
-/// <summary>
-/// Değer 0 ise Visible, değilse Collapsed döndürür. (Boş durum göstergesi)
-/// </summary>
+
+
 public class ZeroToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -39,10 +37,9 @@ public class ZeroToVisibilityConverter : IValueConverter
     }
 }
 
-/// <summary>
-/// SKT durumuna göre arka plan rengi döndüren converter.
-/// "Expired" → Kırmızı, "Warning" → Sarı, "Normal" → Yeşil
-/// </summary>
+
+
+
 public class ExpiryStatusConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -51,9 +48,9 @@ public class ExpiryStatusConverter : IValueConverter
         {
             return status switch
             {
-                "Expired" => new SolidColorBrush(Color.FromRgb(239, 68, 68)),   // Red
-                "Warning" => new SolidColorBrush(Color.FromRgb(249, 115, 22)),   // Soft orange
-                "Normal"  => new SolidColorBrush(Color.FromRgb(16, 185, 129)),   // Soft green
+                "Expired" => new SolidColorBrush(Color.FromRgb(239, 68, 68)),
+                "Warning" => new SolidColorBrush(Color.FromRgb(249, 115, 22)),
+                "Normal"  => new SolidColorBrush(Color.FromRgb(16, 185, 129)),
                 _ => new SolidColorBrush(Colors.Gray)
             };
         }
@@ -66,9 +63,8 @@ public class ExpiryStatusConverter : IValueConverter
     }
 }
 
-/// <summary>
-/// SKT durumuna göre metin döndüren converter.
-/// </summary>
+
+
 public class ExpiryStatusTextConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -92,18 +88,17 @@ public class ExpiryStatusTextConverter : IValueConverter
     }
 }
 
-/// <summary>
-/// Stok < 5 ise kritik uyarı rengi döndüren converter.
-/// </summary>
+
+
 public class StockWarningConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is bool isLow && isLow)
         {
-            return new SolidColorBrush(Color.FromRgb(249, 115, 22)); // Soft orange
+            return new SolidColorBrush(Color.FromRgb(249, 115, 22));
         }
-        return new SolidColorBrush(Color.FromRgb(107, 114, 128)); // Muted gray
+        return new SolidColorBrush(Color.FromRgb(107, 114, 128));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -112,9 +107,8 @@ public class StockWarningConverter : IValueConverter
     }
 }
 
-/// <summary>
-/// Kategori adına göre emoji döndüren converter.
-/// </summary>
+
+
 public class CategoryToEmojiConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -145,9 +139,8 @@ public class CategoryToEmojiConverter : IValueConverter
     }
 }
 
-/// <summary>
-/// Hex renk string'ini (#RRGGBB) SolidColorBrush'a dönüştürür.
-/// </summary>
+
+
 public class HexStringToBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -167,3 +160,4 @@ public class HexStringToBrushConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
 }
+

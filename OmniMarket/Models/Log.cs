@@ -33,7 +33,6 @@ public class Log
     [MaxLength(500)]
     public string Detay { get; set; } = string.Empty;
 
-    // Audit: değişiklik öncesi ve sonrası değerler
     [MaxLength(500)]
     public string? EskiDeger { get; set; }
 
@@ -43,6 +42,6 @@ public class Log
     [Required]
     public DateTime Tarih { get; set; } = DateTime.UtcNow;
 
-    // Navigation Property
     public Market? Market { get; set; }
 }
+

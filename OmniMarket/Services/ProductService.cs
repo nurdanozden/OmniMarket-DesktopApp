@@ -7,9 +7,9 @@ namespace OmniMarket.Services;
 
 public class ProductService
 {
-    /// <summary>
-    /// Belirli bir markete ait tüm ürünleri getirir.
-    /// </summary>
+
+
+
     public List<Product> GetProducts(int marketId)
     {
         using var db = new AppDbContext();
@@ -24,9 +24,8 @@ public class ProductService
         return GroupProducts(rawResults);
     }
 
-    /// <summary>
-    /// Ürün adına göre arama yapar (Aynı isimli ürünleri gruplar).
-    /// </summary>
+
+
     public List<Product> SearchProducts(int marketId, string searchText)
     {
         try
@@ -49,9 +48,8 @@ public class ProductService
         }
     }
 
-    /// <summary>
-    /// Kategoriye göre filtreler.
-    /// </summary>
+
+
     public List<Product> FilterByCategory(int marketId, string category)
     {
         try
@@ -71,9 +69,8 @@ public class ProductService
         }
     }
 
-    /// <summary>
-    /// Marketteki tüm kategorileri getirir.
-    /// </summary>
+
+
     public List<string> GetCategories(int marketId)
     {
         try
@@ -93,69 +90,104 @@ public class ProductService
         }
     }
 
-    /// <summary>
-    /// Yeni ürün ekler.
-    /// </summary>
+
+
     public Product AddProduct(Product product, string kullaniciAdi)
     {
-        using var db = new AppDbContext();
-        db.Products.Add(product);
-        db.SaveChanges();
-
-        // LOG
-        var logService = new LogService();
-        logService.AddLog(product.MarketId, kullaniciAdi, LogType.Ekleme, $"'{product.Name}' adlı yeni ürün stoğa eklendi (Stok: {product.Stock}).");
-
-        return product;
-    }
-
-    /// <summary>
-    /// Mevcut ürünü günceller.
-    /// </summary>
-    public void UpdateProduct(Product product, string kullaniciAdi)
-    {
-        using var db = new AppDbContext();
-        var existingProduct = db.Products.AsNoTracking().FirstOrDefault(p => p.Id == product.Id);
-        string oldStockStr = existingProduct != null ? existingProduct.Stock.ToString() : "?";
-
-        db.Products.Update(product);
-        db.SaveChanges();
-
-        // LOG
-        var logService = new LogService();
-        logService.AddLog(product.MarketId, kullaniciAdi, LogType.Guncelleme, $"'{product.Name}' ürünü güncellendi (Eski Stok: {oldStockStr} -> Yeni Stok: {product.Stock}).");
-    }
-
-    /// <summary>
-    /// Ürünü siler.
-    /// </summary>
-    public void DeleteProduct(int productId, string kullaniciAdi)
-    {
-        using var db = new AppDbContext();
-        var product = db.Products.Find(productId);
-        if (product != null)
+        try
         {
-            db.Products.Remove(product);
+            using var db = new AppDbContext();
+            db.Products.Add(product);
             db.SaveChanges();
 
-            // LOG
             var logService = new LogService();
-            logService.AddLog(product.MarketId, kullaniciAdi, LogType.Silme, $"'{product.Name}' adlı ürün sistemden tamamen silindi.");
+            logService.AddLog(product.MarketId, kullaniciAdi, LogType.Ekleme, $"'{product.Name}' adlı yeni ürün stoğa eklendi (Stok: {product.Stock}).");
+
+            return product;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ürün eklenirken veritabanı hatası oluştu: {ex.Message}", "Sistem Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+            return product;
         }
     }
 
-    /// <summary>
-    /// Barkodun bu markette mevcut olup olmadığını kontrol eder.
-    /// </summary>
+
+
+    public void UpdateProduct(Product product, string kullaniciAdi)
+    {
+        try
+        {
+            using var db = new AppDbContext();
+            var existingProduct = db.Products.AsNoTracking().FirstOrDefault(p => p.Id == product.Id);
+            string oldStockStr = existingProduct != null ? existingProduct.Stock.ToString() : "?";
+
+            db.Products.Update(product);
+            db.SaveChanges();
+
+            var logService = new LogService();
+            logService.AddLog(product.MarketId, kullaniciAdi, LogType.Guncelleme, $"'{product.Name}' ürünü güncellendi (Eski Stok: {oldStockStr} -> Yeni Stok: {product.Stock}).");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ürün güncellenirken veritabanı hatası oluştu: {ex.Message}", "Sistem Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+
+
+    public void DeleteProduct(int productId, string kullaniciAdi)
+    {
+        try
+        {
+            using var db = new AppDbContext();
+            var product = db.Products.Find(productId);
+            if (product != null)
+            {
+                db.Products.Remove(product);
+                db.SaveChanges();
+
+                var logService = new LogService();
+                logService.AddLog(product.MarketId, kullaniciAdi, LogType.Silme, $"'{product.Name}' adlı ürün sistemden tamamen silindi.");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ürün silinirken veritabanı hatası oluştu: {ex.Message}", "Sistem Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    public void DeleteProductGroup(string productName, int marketId, string kullaniciAdi)
+    {
+        try
+        {
+            using var db = new AppDbContext();
+            var products = db.Products.Where(p => p.Name == productName && p.MarketId == marketId).ToList();
+            if (products.Any())
+            {
+                db.Products.RemoveRange(products);
+                db.SaveChanges();
+
+                var logService = new LogService();
+                logService.AddLog(marketId, kullaniciAdi, LogType.Silme, $"'{productName}' adlı ürün (tüm partiler) sistemden tamamen silindi.");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ürün silinirken veritabanı hatası oluştu: {ex.Message}", "Sistem Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+
+
     public bool BarcodeExists(int marketId, string barcode)
     {
         using var db = new AppDbContext();
         return db.Products.Any(p => p.MarketId == marketId && p.Barcode == barcode);
     }
 
-    /// <summary>
-    /// Dashboard istatistiklerini hesaplar.
-    /// </summary>
+
+
     public (int TotalProducts, int ExpiringProducts, int ExpiredProducts, decimal TotalStockValue) GetDashboardStats(int marketId)
     {
         using var db = new AppDbContext();
@@ -169,9 +201,8 @@ public class ProductService
         return (total, expiring, expired, stockValue);
     }
 
-    /// <summary>
-    /// SKT yaklaşan ürünlere (bugünden 1-7 gün içinde) kampanya indirimi uygular.
-    /// </summary>
+
+
     public int ApplyCampaign(int marketId, decimal discountRate)
     {
         using var db = new AppDbContext();
@@ -189,9 +220,8 @@ public class ProductService
         return expiring.Count;
     }
 
-    /// <summary>
-    /// SKT yaklaşan ürünlere (bugünden 1-7 gün içinde) iade talebi oluşturur.
-    /// </summary>
+
+
     public int RequestReturn(int marketId)
     {
         using var db = new AppDbContext();
@@ -209,9 +239,8 @@ public class ProductService
         return expiring.Count;
     }
 
-    /// <summary>
-    /// Uyarı listesini getirir.
-    /// </summary>
+
+
     public List<(string Message, string Type)> GetAlerts(int marketId)
     {
         using var db = new AppDbContext();
@@ -232,10 +261,9 @@ public class ProductService
         return alerts;
     }
 
-    /// <summary>
-    /// Aynı isimdeki ürünleri gruplayarak stoklarını toplar ve tek satır halinde gösterir.
-    /// SKT'si en yakın olanı baz alarak durumu belirler (Order by ExpiryDate Ascending).
-    /// </summary>
+
+
+
     private List<Product> GroupProducts(List<Product> rawResults)
     {
         if (rawResults == null || !rawResults.Any()) return new List<Product>();
@@ -247,7 +275,7 @@ public class ProductService
                 .Select(g => 
                 {
                     var first = g.OrderBy(p => p.ExpiryDate).FirstOrDefault();
-                    if (first == null) return null; // Olmaması gerek ama null reference fail-safe
+                    if (first == null) return null;
 
                     return new Product
                     {
@@ -261,11 +289,11 @@ public class ProductService
                         ExpiryDate = first.ExpiryDate,
                         MarketId = first.MarketId,
                         TedarikciId = first.TedarikciId,
-                        Tedarikci = first.Tedarikci // Null olabilir, bu normal. UI'da null check atıldı.
+                        Tedarikci = first.Tedarikci
                     };
                 })
                 .Where(p => p != null)
-                .Select(p => p!) // Not null assertion
+                .Select(p => p!)
                 .OrderBy(p => p.ExpiryDate)
                 .ToList();
         }
@@ -273,13 +301,12 @@ public class ProductService
         {
             MessageBox.Show($"Product Service Grouping Hatası: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}",
                 "Crtical Exception in Grouping", MessageBoxButton.OK, MessageBoxImage.Error);
-            return new List<Product>(); // Boş dön, patlama
+            return new List<Product>();
         }
     }
 
-    /// <summary>
-    /// SKT'si geçmiş ürünlerde eksik/hatalı tedarikçi atamalarını düzeltir.
-    /// </summary>
+
+
     private static void NormalizeExpiredProductSuppliers(AppDbContext db, int marketId)
     {
         var suppliers = db.Tedarikciler
@@ -341,3 +368,4 @@ public class ProductService
         };
     }
 }
+

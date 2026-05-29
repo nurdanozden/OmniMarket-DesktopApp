@@ -74,7 +74,6 @@ public class SettingsViewModel : BaseViewModel
             return;
         }
 
-        // Password change logic
         if (!string.IsNullOrEmpty(OldPassword) || !string.IsNullOrEmpty(NewPassword) || !string.IsNullOrEmpty(ConfirmNewPassword))
         {
             if (market.Password != OldPassword)
@@ -106,8 +105,7 @@ public class SettingsViewModel : BaseViewModel
         profile.TemaRengi = TemaRengi;
 
         db.SaveChanges();
-        
-        // Reset password fields internally, NOTE: UI PasswordBoxes won't clear magically unless we pass events or use special bindings, but this clears VM state.
+
         OldPassword = string.Empty;
         NewPassword = string.Empty;
         ConfirmNewPassword = string.Empty;
@@ -134,3 +132,4 @@ public class SettingsViewModel : BaseViewModel
         }
     }
 }
+

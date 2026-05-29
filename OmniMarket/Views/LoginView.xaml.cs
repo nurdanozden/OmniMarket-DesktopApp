@@ -9,7 +9,6 @@ public partial class LoginView : UserControl
     {
         InitializeComponent();
 
-        // PasswordBox → ViewModel senkronizasyonu
         PasswordBox.PasswordChanged += (s, e) =>
         {
             if (DataContext is ViewModels.LoginViewModel vm)
@@ -19,7 +18,6 @@ public partial class LoginView : UserControl
                 ? Visibility.Visible : Visibility.Collapsed;
         };
 
-        // Test Giriş: PasswordBox'ı otomatik doldur
         Loaded += (s, e) =>
         {
             if (DataContext is ViewModels.LoginViewModel vm)
@@ -35,3 +33,4 @@ public partial class LoginView : UserControl
         };
     }
 }
+

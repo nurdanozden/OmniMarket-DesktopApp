@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using OmniMarket.Helpers;
 using OmniMarket.Models;
 using OmniMarket.Services;
@@ -64,27 +64,38 @@ public class RegisterViewModel : BaseViewModel
             string.IsNullOrWhiteSpace(Username) ||
             string.IsNullOrWhiteSpace(Password))
         {
+            MessageBox.Show("Tüm alanlar doldurulmalıdır.", "Eksik Bilgi", MessageBoxButton.OK, MessageBoxImage.Warning);
             ErrorMessage = "Tüm alanlar doldurulmalıdır.";
             return;
         }
 
         if (Password.Length < 4)
         {
+            MessageBox.Show("Şifre en az 4 karakter olmalıdır.", "Güvenlik Uyarısı", MessageBoxButton.OK, MessageBoxImage.Warning);
             ErrorMessage = "Şifre en az 4 karakter olmalıdır.";
             return;
         }
 
-        var market = _authService.Register(MarketName, Username, Password);
-        if (market != null)
+        try
         {
-            SuccessMessage = "Kayıt başarılı! Giriş yapabilirsiniz.";
-            MarketName = string.Empty;
-            Username = string.Empty;
-            Password = string.Empty;
+            var market = _authService.Register(MarketName, Username, Password);
+            if (market != null)
+            {
+                MessageBox.Show("Kayıt başarılı! Giriş yapabilirsiniz.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+                SuccessMessage = "Kayıt başarılı! Giriş yapabilirsiniz.";
+                MarketName = string.Empty;
+                Username = string.Empty;
+                Password = string.Empty;
+            }
+            else
+            {
+                MessageBox.Show("Bu kullanıcı adı zaten kullanılıyor.", "Kayıt Başarısız", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = "Bu kullanıcı adı zaten kullanılıyor.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            ErrorMessage = "Bu kullanıcı adı zaten kullanılıyor.";
+            MessageBox.Show($"Kayıt işlemi sırasında veritabanı hatası oluştu: {ex.Message}", "Bağlantı Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

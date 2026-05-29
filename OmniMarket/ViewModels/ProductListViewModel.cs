@@ -20,7 +20,6 @@ public class ProductListViewModel : BaseViewModel
     private string _selectedCategory = string.Empty;
     private List<string> _categories = new();
 
-    // Aktif filtre bilgisi (UI'da göstermek için)
     private string _activeFilterLabel = string.Empty;
     public string ActiveFilterLabel
     {
@@ -28,7 +27,6 @@ public class ProductListViewModel : BaseViewModel
         set => SetProperty(ref _activeFilterLabel, value);
     }
 
-    // Sabit kategori listesi (form için)
     private List<string> _formCategories = new();
     public List<string> FormCategories
     {
@@ -36,7 +34,6 @@ public class ProductListViewModel : BaseViewModel
         set => SetProperty(ref _formCategories, value);
     }
 
-    // Form fields
     private string _formName = string.Empty;
     private string _formCategory = string.Empty;
     private string _formBarcode = string.Empty;
@@ -88,7 +85,6 @@ public class ProductListViewModel : BaseViewModel
         set => SetProperty(ref _categories, value);
     }
 
-    // Form properties
     public string FormName     { get => _formName;     set => SetProperty(ref _formName, value); }
     public string FormCategory { get => _formCategory; set => SetProperty(ref _formCategory, value); }
     public string FormBarcode  { get => _formBarcode;  set => SetProperty(ref _formBarcode, value); }
@@ -169,8 +165,7 @@ public class ProductListViewModel : BaseViewModel
         {
             MessageBox.Show($"Ürünler yüklenirken hata oluştu!\n\nHata: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}", 
                 "Crash Engellendi", MessageBoxButton.OK, MessageBoxImage.Error);
-            
-            // UI kilitlenmesin diye boş liste ayarla
+
             Products = new ObservableCollection<Product>();
             Categories = new List<string> { "Tüm Kategoriler" };
             FormCategories = new List<string>();
@@ -213,7 +208,7 @@ public class ProductListViewModel : BaseViewModel
         }
 
         Products = new ObservableCollection<Product>(filtered);
-        _initialFilter = null; // Tek seferlik filtre
+        _initialFilter = null;
     }
 
     private void ExecuteSearch()
@@ -278,7 +273,7 @@ public class ProductListViewModel : BaseViewModel
     {
         IsEditing = false;
         ClearForm();
-        GenerateBarcode(); // Otomatik barkod oluştur
+        GenerateBarcode();
         IsFormVisible = true;
         OnPropertyChanged(nameof(FormTitle));
     }
@@ -312,7 +307,7 @@ public class ProductListViewModel : BaseViewModel
         if (selectedItems.Any())
         {
             var result = MessageBox.Show(
-                $"{selectedItems.Count} adet ürünü silmek istediğinize emin misiniz?",
+                $"{selectedItems.Count} adet ürünü (ve tüm stoklarını) silmek istediğinize emin misiniz?",
                 "Silme Onayı",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
@@ -321,7 +316,7 @@ public class ProductListViewModel : BaseViewModel
             {
                 foreach(var item in selectedItems)
                 {
-                    _productService.DeleteProduct(item.Id, _marketName);
+                    _productService.DeleteProductGroup(item.Name, _marketId, _marketName);
                 }
                 LoadProducts();
             }
@@ -336,14 +331,14 @@ public class ProductListViewModel : BaseViewModel
         }
 
         var singleResult = MessageBox.Show(
-            $"\"{SelectedProduct.Name}\" ürününü silmek istediğinize emin misiniz?",
+            $"\"{SelectedProduct.Name}\" ürününü ve tüm stoğunu silmek istediğinize emin misiniz?",
             "Silme Onayı",
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
 
         if (singleResult == MessageBoxResult.Yes)
         {
-            _productService.DeleteProduct(SelectedProduct.Id, _marketName);
+            _productService.DeleteProductGroup(SelectedProduct.Name, _marketId, _marketName);
             LoadProducts();
         }
     }
@@ -361,14 +356,14 @@ public class ProductListViewModel : BaseViewModel
         MessageBox.Show($"{selectedItems.Count} adet ürün başarıyla arşivlendi! (Demo)", "Bilgi", MessageBoxButton.OK, MessageBoxImage.Information);
         foreach(var item in selectedItems)
         {
-            item.IsSelected = false; // Temizle
+            item.IsSelected = false;
         }
         LoadProducts();
     }
 
     private void ExecuteSave()
     {
-        // ─── Validation ───
+
         if (string.IsNullOrWhiteSpace(FormName))
         {
             MessageBox.Show("Ürün adı boş bırakılamaz.", "Doğrulama Hatası",
@@ -473,3 +468,4 @@ public class ProductListViewModel : BaseViewModel
         }
     }
 }
+

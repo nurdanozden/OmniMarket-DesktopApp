@@ -64,14 +64,12 @@ public class DashboardViewModel : BaseViewModel
         set => SetProperty(ref _topSoldProducts, value);
     }
 
-    // Navigation Commands
     public RelayCommand NavigateToAllProductsCommand  { get; }
     public RelayCommand NavigateToExpiringCommand     { get; }
     public RelayCommand NavigateToExpiredCommand      { get; }
     public RelayCommand NavigateToStockValueCommand   { get; }
     public RelayCommand RefreshCommand                { get; }
 
-    // Action Commands
     public RelayCommand ApplyCampaignCommand { get; }
     public RelayCommand CreateReturnCommand  { get; }
 
@@ -83,7 +81,7 @@ public class DashboardViewModel : BaseViewModel
         NavigateToExpiringCommand    = new RelayCommand(() => NavigateRequested?.Invoke("expiring"));
         NavigateToExpiredCommand     = new RelayCommand(() => NavigateRequested?.Invoke("expired"));
         NavigateToStockValueCommand  = new RelayCommand(() => NavigateRequested?.Invoke("stockvalue"));
-        RefreshCommand               = new RelayCommand(LoadData);
+        RefreshCommand               = new RelayCommand(ExecuteRefresh);
 
         ApplyCampaignCommand = new RelayCommand(ExecuteApplyCampaign);
         CreateReturnCommand  = new RelayCommand(ExecuteCreateReturn);
@@ -97,23 +95,31 @@ public class DashboardViewModel : BaseViewModel
 
     private void LoadData()
     {
-        // Gerçek veritabanı istatistikleri
+
         var (total, expiring, expired, stockValue) = _productService.GetDashboardStats(_marketId);
         TotalProducts    = total;
         ExpiringProducts = expiring;
         ExpiredProducts  = expired;
         TotalStockValue  = stockValue;
 
-        // Alerts
-        Alerts = new ObservableCollection<AlertItem>
+        var dbAlerts = _productService.GetAlerts(_marketId);
+        var alertItems = dbAlerts.Select(a => new AlertItem { Message = a.Message, Type = a.Type }).ToList();
+        
+        if (!alertItems.Any())
         {
-            new() { Message = "DİKKAT: 'Sütaş Yoğurt 2kg' ürününün 5 adedinin SKT'sine sadece 2 gün kaldı! Kampanya başlatılabilir.", Type = "Warning" },
-            new() { Message = "STOK KRİTİK: 'Çaykur Rize Turist Çay 500g' stokta sadece 2 adet kaldı. Tedarikçiye sipariş geçilmeli.", Type = "LowStock" },
-            new() { Message = "BİLGİ: Haftalık satış analizine göre 'Dondurma' satışları %20 arttı, stokları kontrol et.", Type = "Info" }
-        };
+            alertItems.Add(new AlertItem { Message = "Her şey yolunda! Sistemde kritik bir durum görünmüyor.", Type = "Info" });
+        }
+
+        Alerts = new ObservableCollection<AlertItem>(alertItems);
 
         LoadTopExpiredProducts();
         LoadTopSoldProducts();
+    }
+
+    private void ExecuteRefresh()
+    {
+        LoadData();
+        MessageBox.Show("Dashboard verileri en güncel haliyle veritabanından çekildi.", "Yenilendi", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void ExecuteApplyCampaign()
@@ -125,7 +131,6 @@ public class DashboardViewModel : BaseViewModel
             return;
         }
 
-        // Basit input dialog
         var dialog = new System.Windows.Window
         {
             Title = "Hızlı Kampanya Tanımla",
@@ -272,3 +277,4 @@ public class TopProductItem
     public string Icon      { get; set; } = string.Empty;
     public string ColorHex  { get; set; } = string.Empty;
 }
+

@@ -12,25 +12,21 @@ public class SupplierDetailViewModel : BaseViewModel
     private Tedarikci _supplier = null!;
     private ObservableCollection<ProductRowItem> _products = new();
 
-    // ── Tedarikçi Bilgileri ─────────────────────────────────────────────
     public string SupplierName      => _supplier?.Ad            ?? string.Empty;
     public string SupplierCategory  => _supplier?.Kategori      ?? string.Empty;
     public string SupplierPhone     => _supplier?.IletisimNo    ?? string.Empty;
     public string SupplierDays      => _supplier?.TeslimatGunleri ?? string.Empty;
 
-    // Mock contact info (Tedarikci modeline adres/yetkili eklenmeden önce placeholder)
     public string SupplierAddress        => "Kuzey Sanayi Bölgesi, No:14, İstanbul";
     public string SupplierAuthorizedName => "Ahmet Yılmaz";
     public string ActiveOrderCount       => "3 Aktif Sipariş";
 
-    // ── Ürün Portföyü ──────────────────────────────────────────────────
     public ObservableCollection<ProductRowItem> Products
     {
         get => _products;
         set => SetProperty(ref _products, value);
     }
 
-    // ── Finansal Özet ──────────────────────────────────────────────────
     private decimal _totalCost;
     private decimal _paidAmount;
     private decimal _remainingDebt;
@@ -51,7 +47,6 @@ public class SupplierDetailViewModel : BaseViewModel
         set => SetProperty(ref _remainingDebt, value);
     }
 
-    // ── Performans Metriği ─────────────────────────────────────────────
     private int    _totalProductCount;
     private int    _expiredProductCount;
     private double _wasteRate;
@@ -73,7 +68,6 @@ public class SupplierDetailViewModel : BaseViewModel
     }
     public string WasteRateText => $"%{WasteRate:N1}";
 
-    // ── Güvenilirlik Skoru ───────────────────────────────────────────
     private double _reliabilityScore;
     public double ReliabilityScore
     {
@@ -89,7 +83,6 @@ public class SupplierDetailViewModel : BaseViewModel
                                     : ReliabilityScore >= 40 ? "#EA580C"
                                     : "#DC2626";
 
-    // ── Commands ─────────────────────────────────────────────────────────
     public RelayCommand GoBackCommand { get; }
     public event Action? BackRequested;
 
@@ -114,13 +107,11 @@ public class SupplierDetailViewModel : BaseViewModel
     {
         using var db = new AppDbContext();
 
-        // JOIN: Bu tedarikçiye ait ürünleri getir
         var rawProducts = db.Products
             .Where(p => p.TedarikciId == _supplier.Id)
             .OrderBy(p => p.ExpiryDate)
             .ToList();
 
-        // Ürünleri isme göre grupla (aynı ürün birden fazla kayıtla olabilir)
         var grouped = rawProducts
             .GroupBy(p => p.Name)
             .Select(g =>
@@ -147,12 +138,10 @@ public class SupplierDetailViewModel : BaseViewModel
 
         Products = new ObservableCollection<ProductRowItem>(grouped);
 
-        // ── Finansal Özet ───────────────────────────────────────────────
         TotalCost     = rawProducts.Sum(p => p.PurchasePrice * p.Stock);
-        PaidAmount    = Math.Round(TotalCost * 0.70m, 2);   // Mock: %70 ödenmiş
+        PaidAmount    = Math.Round(TotalCost * 0.70m, 2);
         RemainingDebt = TotalCost - PaidAmount;
 
-        // ── Performans ──────────────────────────────────────────────────
         TotalProductCount   = grouped.Count;
         ExpiredProductCount = grouped.Count(r => r.StatusText == "SKT Geçmiş");
         WasteRate           = TotalProductCount > 0
@@ -161,7 +150,6 @@ public class SupplierDetailViewModel : BaseViewModel
 
         OnPropertyChanged(nameof(WasteRateText));
 
-        // Güvenilirlik Skoru: zayiat oranının tersi (100 - wasteRate)
         ReliabilityScore = Math.Max(0, Math.Min(100, 100 - WasteRate));
         OnPropertyChanged(nameof(ReliabilityLabel));
         OnPropertyChanged(nameof(ReliabilityColor));
@@ -180,3 +168,4 @@ public class ProductRowItem
     public string  StatusColor   { get; set; } = string.Empty;
     public string  ExpiryDateText => ExpiryDate.ToString("dd.MM.yyyy");
 }
+

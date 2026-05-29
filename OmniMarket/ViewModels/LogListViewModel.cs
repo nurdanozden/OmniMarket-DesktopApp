@@ -11,11 +11,9 @@ public class LogListViewModel : BaseViewModel
     private readonly LogService _logService;
     private int _marketId;
     private string _searchText = string.Empty;
-    
-    // Asıl veri listesi (Full List)
+
     private ObservableCollection<Log> _allLogs = new();
-    
-    // UI'da gösterilen (Filtrelenmiş) Koleksiyon
+
     public CollectionViewSource FilteredLogsView { get; } = new CollectionViewSource();
 
     public string SearchText
@@ -69,11 +67,12 @@ public class LogListViewModel : BaseViewModel
     private async Task LoadLogsAsync()
     {
         var logs = await _logService.GetLogsAsync(_marketId);
-        AllLogs.Clear();
-        foreach (var log in logs)
-        {
-            AllLogs.Add(log);
-        }
+        
+        var newLogs = new ObservableCollection<Log>(logs);
+        AllLogs = newLogs;
+        
+        FilteredLogsView.Source = AllLogs;
+        FilteredLogsView.View.Filter = FilterLogs;
         FilteredLogsView.View.Refresh();
     }
 
@@ -89,3 +88,4 @@ public class LogListViewModel : BaseViewModel
                log.IslemTipi.ToString().ToLower().Contains(searchLower);
     }
 }
+

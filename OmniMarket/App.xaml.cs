@@ -14,13 +14,12 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        // Global Exception Handler (Ani çökmeleri yakalamak için)
         this.DispatcherUnhandledException += (s, args) =>
         {
             System.IO.File.WriteAllText("crash.log", $"Dispatcher Çökmesi: {args.Exception}");
             MessageBox.Show($"Kritik Çökme Engellendi!\n\nHata: {args.Exception.Message}\n\nDetay: {args.Exception.InnerException?.Message}\n\nStack:\n{args.Exception.StackTrace}",
                             "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            args.Handled = true; // Uygulamanın kapanmasını önle
+            args.Handled = true;
         };
 
         AppDomain.CurrentDomain.UnhandledException += (s, args) =>
@@ -34,13 +33,10 @@ public partial class App : Application
             args.SetObserved();
         };
 
-        // Veritabanını oluştur / güncelle + demo veri
         using (var db = new AppDbContext())
         {
             db.Database.EnsureCreated();
 
-            // Ef Core EnsureCreated() var olan veritabanına yeni tablo eklemediği için
-            // Logs tablosunu eğer yoksa raw SQL ile oluşturuyoruz (PostgreSQL).
             try
             {
                 db.Database.ExecuteSqlRaw(@"
@@ -57,9 +53,8 @@ public partial class App : Application
                     );
                 ");
             }
-            catch { /* Hata görmezden geliniyor (Zaten varsa vs.) */ }
+            catch { }
 
-            // Yeni ürün alanları — mevcut DB'ye ALTER TABLE ile ekleniyor
             try
             {
                 db.Database.ExecuteSqlRaw(@"ALTER TABLE ""Products"" ADD COLUMN IF NOT EXISTS ""DiscountRate"" numeric(5,2) NULL;");
@@ -71,7 +66,6 @@ public partial class App : Application
             }
             catch { }
 
-            // Log tablosuna audit sütunları — EskiDeger / YeniDeger
             try
             {
                 db.Database.ExecuteSqlRaw(@"ALTER TABLE ""Logs"" ADD COLUMN IF NOT EXISTS ""EskiDeger"" character varying(500) NULL;");
@@ -88,7 +82,6 @@ public partial class App : Application
             DataSeeder.UpdateAllProductExpiryDates(db);
         }
 
-        // Login ekranını göster
         ShowLogin();
     }
 

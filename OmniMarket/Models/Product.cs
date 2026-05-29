@@ -28,49 +28,42 @@ public class Product
 
     public DateTime ExpiryDate { get; set; }
 
-    // Foreign Key
     public int MarketId { get; set; }
 
     public int? TedarikciId { get; set; }
 
-    // Kampanya indirimi (%)
     [Column(TypeName = "decimal(5,2)")]
     public decimal? DiscountRate { get; set; }
 
-    // İade talebi durumu
     public bool ReturnRequested { get; set; }
 
-    // Navigation property
     [ForeignKey("MarketId")]
     public Market? Market { get; set; }
 
     [ForeignKey("TedarikciId")]
     public virtual Tedarikci? Tedarikci { get; set; }
 
-    // Computed: SKT durumu
     [NotMapped]
     public string ExpiryStatus
     {
         get
         {
             if (DateTime.Today > ExpiryDate)
-                return "Expired";    // Kırmızı
+                return "Expired";
             else if ((ExpiryDate - DateTime.Today).TotalDays <= 7)
-                return "Warning";    // Sarı
+                return "Warning";
             else
-                return "Normal";     // Yeşil
+                return "Normal";
         }
     }
 
-    // Computed: Kar hesaplama (birim)
     [NotMapped]
     public decimal Profit => SalePrice - PurchasePrice;
 
-    // Computed: Stok durumu
     [NotMapped]
     public bool IsLowStock => Stock < 5;
 
-    // Checkbox bind için
     [NotMapped]
     public bool IsSelected { get; set; }
 }
+

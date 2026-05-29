@@ -102,9 +102,8 @@ public class MainViewModel : BaseViewModel
         CurrentViewName = "Ayarlar";
     }
 
-    /// <summary>
-    /// DashboardViewModel'deki NavigateRequested event handler'ı.
-    /// </summary>
+
+
     private void OnDashboardNavigateRequested(string filter)
     {
         NavigateToProductsFiltered(filter);
@@ -115,3 +114,4 @@ public class MainViewModel : BaseViewModel
         LoggedOut?.Invoke();
     }
 }
+

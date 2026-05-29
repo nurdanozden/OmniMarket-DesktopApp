@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OmniMarket.Data;
 using OmniMarket.Models;
 
@@ -15,7 +15,7 @@ public class LogService
             KullaniciAdi = kullaniciAdi,
             IslemTipi = islemTipi,
             Detay = detay,
-            Tarih = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc) // Postgres requires UTC
+            Tarih = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc)
         };
 
         db.Logs.Add(log);
@@ -31,3 +31,4 @@ public class LogService
             .ToListAsync();
     }
 }
+

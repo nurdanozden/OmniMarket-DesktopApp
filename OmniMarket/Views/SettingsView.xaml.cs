@@ -7,15 +7,15 @@ namespace OmniMarket.Views;
 
 public partial class SettingsView : UserControl
 {
-    private static readonly SolidColorBrush ActiveFg   = new(Color.FromRgb(16, 185, 129));   // Emerald #10B981
-    private static readonly SolidColorBrush InactiveFg = new(Color.FromRgb(100, 116, 139));  // Slate-500 #64748B
-    private static readonly SolidColorBrush ActiveBg   = new(Color.FromRgb(236, 253, 245));  // Emerald-50 #ECFDF5
+    private static readonly SolidColorBrush ActiveFg   = new(Color.FromRgb(16, 185, 129));
+    private static readonly SolidColorBrush InactiveFg = new(Color.FromRgb(100, 116, 139));
+    private static readonly SolidColorBrush ActiveBg   = new(Color.FromRgb(236, 253, 245));
     private static readonly SolidColorBrush TransparentBg = new(Colors.Transparent);
 
     public SettingsView()
     {
         InitializeComponent();
-        // İlk tab aktif olarak başlasın
+
         Loaded += (_, _) => ActivateTab(TabGeneral, "General");
     }
 
@@ -27,12 +27,11 @@ public partial class SettingsView : UserControl
 
     private void ActivateTab(Button activeBtn, string? tag)
     {
-        // Panel görünürlükleri
+
         PanelGeneral.Visibility       = tag == "General"       ? Visibility.Visible : Visibility.Collapsed;
         PanelProfile.Visibility       = tag == "Profile"       ? Visibility.Visible : Visibility.Collapsed;
         PanelSystem.Visibility        = tag == "System"        ? Visibility.Visible : Visibility.Collapsed;
 
-        // Tüm tab butonlarını pasife al
         foreach (var btn in new[] { TabGeneral, TabProfile, TabSystem })
         {
             btn.Foreground   = InactiveFg;
@@ -41,7 +40,6 @@ public partial class SettingsView : UserControl
             btn.BorderThickness = new Thickness(0, 0, 0, 2);
         }
 
-        // Aktif tab'ı vurgula
         activeBtn.Foreground     = ActiveFg;
         activeBtn.Background     = ActiveBg;
         activeBtn.BorderBrush    = ActiveFg;
@@ -66,4 +64,5 @@ public partial class SettingsView : UserControl
             vm.ConfirmNewPassword = box.Password;
     }
 }
+
 

@@ -298,16 +298,16 @@
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="3" Margin="8,0,0,12">
                             <TextBlock Text="Stok *" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding FormStock, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}"/>
+                            <TextBox Text="{Binding FormStock, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" PreviewTextInput="NumberValidationTextBox"/>
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,12">
                             <TextBlock Text="Alış Fiyatı (₺) *" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding FormPurchasePrice, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}"/>
+                            <TextBox Text="{Binding FormPurchasePrice, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" PreviewTextInput="NumberValidationTextBox"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1" Margin="4,0,4,12">
                             <TextBlock Text="Satış Fiyatı (₺) *" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding FormSalePrice, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}"/>
+                            <TextBox Text="{Binding FormSalePrice, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" PreviewTextInput="NumberValidationTextBox"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="2" Margin="4,0,4,12">
                             <TextBlock Text="Son Kullanma Tarihi *" Foreground="{StaticResource TextMuted}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4"/>

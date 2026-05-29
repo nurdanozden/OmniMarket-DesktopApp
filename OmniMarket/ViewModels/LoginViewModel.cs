@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using OmniMarket.Helpers;
 using OmniMarket.Models;
 using OmniMarket.Services;
@@ -34,11 +34,9 @@ public class LoginViewModel : BaseViewModel
     public RelayCommand GoToRegisterCommand { get; }
     public RelayCommand TestLoginCommand { get; }
 
-    // Events for navigation
     public event Action<Market>? LoginSucceeded;
     public event Action? NavigateToRegister;
 
-    // PasswordBox senkronizasyonu için
     public event Action<string>? PasswordFilled;
 
     public LoginViewModel()
@@ -54,20 +52,29 @@ public class LoginViewModel : BaseViewModel
 
         if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
         {
+            MessageBox.Show("Kullanıcı adı ve şifre boş bırakılamaz.", "Doğrulama Hatası", MessageBoxButton.OK, MessageBoxImage.Warning);
             ErrorMessage = "Kullanıcı adı ve şifre boş bırakılamaz.";
             return;
         }
 
-        var market = _authService.Login(Username, Password);
-        if (market != null)
+        try
         {
-            var logService = new LogService();
-            logService.AddLog(market.Id, market.Username, LogType.Login, "Sisteme giriş yapıldı (Oturum Açıldı).");
-            LoginSucceeded?.Invoke(market);
+            var market = _authService.Login(Username, Password);
+            if (market != null)
+            {
+                var logService = new LogService();
+                logService.AddLog(market.Id, market.Username, LogType.Login, "Sisteme giriş yapıldı (Oturum Açıldı).");
+                LoginSucceeded?.Invoke(market);
+            }
+            else
+            {
+                MessageBox.Show("Geçersiz kullanıcı adı veya şifre.", "Giriş Başarısız", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = "Geçersiz kullanıcı adı veya şifre.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            ErrorMessage = "Geçersiz kullanıcı adı veya şifre.";
+            MessageBox.Show($"Bağlantı veya veritabanı hatası: {ex.Message}", "Sistem Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -79,4 +86,5 @@ public class LoginViewModel : BaseViewModel
         ExecuteLogin();
     }
 }
+
 
