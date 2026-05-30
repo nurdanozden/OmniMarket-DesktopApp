@@ -171,12 +171,16 @@ public class ProductService
     {
         using var db = new AppDbContext();
         var rawProducts = db.Products.Where(p => p.MarketId == marketId).ToList();
+
+        // Stok değeri veritabanındaki her bir ürün satırının gerçek satış fiyatı * stok miktarı üzerinden hesaplanmalıdır.
+        // GroupProducts kullanımı fiyat farklılıkları olan aynı isimli ürünlerde (eski-yeni parti) yanlış sonuca yol açabilir.
+        var stockValue = rawProducts.Sum(p => p.SalePrice * p.Stock);
+
         var products = GroupProducts(rawProducts);
 
         var total = products.Count;
         var expired = products.Count(p => DateTime.Today > p.ExpiryDate);
         var expiring = products.Count(p => DateTime.Today <= p.ExpiryDate && (p.ExpiryDate - DateTime.Today).TotalDays <= 7);
-        var stockValue = products.Sum(p => p.SalePrice * p.Stock);
 
         return (total, expiring, expired, stockValue);
     }
