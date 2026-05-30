@@ -9,5 +9,6 @@ klasör içerisindeki 'market_yedek.sql' dosyasında yer almaktadır.
 
 AppDbContext.cs dosyası içerisindeki UseNpgsql bağlantı şifresi yerel olarak 140104 ayarlanmıştır.
 Projeyi kendi bilgisayarınızda çalıştırırken bu şifreyi kendi PostgreSQL şifrenizle değiştirmeniz gerekebilir.
+bu uygulama dotnet 9 ile geliştirilmiştir, bu nedenle dotnet 9'un bilgisayarınızda yüklü olduğundan emin olunuz.
 
 İyi çalışmalar 😊

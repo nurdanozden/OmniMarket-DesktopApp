@@ -120,7 +120,6 @@ public class ProductListViewModel : BaseViewModel
     public RelayCommand ClearFilterCommand { get; }
     public RelayCommand GenerateBarcodeCommand { get; }
     public RelayCommand CallSupplierCommand { get; }
-    public RelayCommand ArchiveSelectedCommand { get; }
 
     #endregion
 
@@ -135,7 +134,6 @@ public class ProductListViewModel : BaseViewModel
         ClearFilterCommand = new RelayCommand(ClearFilter);
         GenerateBarcodeCommand = new RelayCommand(GenerateBarcode);
         CallSupplierCommand = new RelayCommand(ExecuteCallSupplier);
-        ArchiveSelectedCommand = new RelayCommand(ExecuteArchive);
     }
 
     public void Initialize(int marketId, string marketName, string? filter = null)
@@ -341,24 +339,6 @@ public class ProductListViewModel : BaseViewModel
             _productService.DeleteProductByName(SelectedProduct.Name, _marketId, _marketName);
             LoadProducts();
         }
-    }
-    
-    private void ExecuteArchive()
-    {
-        var selectedItems = Products.Where(p => p.IsSelected).ToList();
-        if (!selectedItems.Any())
-        {
-            MessageBox.Show("Arşivlemek için en az bir ürün seçmelisiniz.", "Uyarı",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-        
-        MessageBox.Show($"{selectedItems.Count} adet ürün başarıyla arşivlendi! (Demo)", "Bilgi", MessageBoxButton.OK, MessageBoxImage.Information);
-        foreach(var item in selectedItems)
-        {
-            item.IsSelected = false;
-        }
-        LoadProducts();
     }
 
     private void ExecuteSave()

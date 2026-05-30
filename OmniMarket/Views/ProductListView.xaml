@@ -83,11 +83,6 @@
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button Style="{StaticResource SmallButton}" Margin="0,0,6,0"
                                 Content="🗑 Seçilenleri Sil" Command="{Binding DeleteProductCommand}"/>
-                        <Button Style="{StaticResource BaseButton}"
-                                Background="#475569" Foreground="#FFFFFF"
-                                FontSize="12" FontWeight="SemiBold"
-                                Padding="12,5"
-                                Content="■ Arşivle" Command="{Binding ArchiveSelectedCommand}"/>
                     </StackPanel>
                 </Grid>
             </Border>
