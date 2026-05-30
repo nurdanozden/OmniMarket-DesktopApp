@@ -67,12 +67,11 @@ public class LogListViewModel : BaseViewModel
     private async Task LoadLogsAsync()
     {
         var logs = await _logService.GetLogsAsync(_marketId);
-        
-        var newLogs = new ObservableCollection<Log>(logs);
-        AllLogs = newLogs;
-        
-        FilteredLogsView.Source = AllLogs;
-        FilteredLogsView.View.Filter = FilterLogs;
+        AllLogs.Clear();
+        foreach (var log in logs)
+        {
+            AllLogs.Add(log);
+        }
         FilteredLogsView.View.Refresh();
     }
 

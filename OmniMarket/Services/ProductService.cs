@@ -157,27 +157,6 @@ public class ProductService
         }
     }
 
-    public void DeleteProductGroup(string productName, int marketId, string kullaniciAdi)
-    {
-        try
-        {
-            using var db = new AppDbContext();
-            var products = db.Products.Where(p => p.Name == productName && p.MarketId == marketId).ToList();
-            if (products.Any())
-            {
-                db.Products.RemoveRange(products);
-                db.SaveChanges();
-
-                var logService = new LogService();
-                logService.AddLog(marketId, kullaniciAdi, LogType.Silme, $"'{productName}' adlı ürün (tüm partiler) sistemden tamamen silindi.");
-            }
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Ürün silinirken veritabanı hatası oluştu: {ex.Message}", "Sistem Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
-
 
 
     public bool BarcodeExists(int marketId, string barcode)

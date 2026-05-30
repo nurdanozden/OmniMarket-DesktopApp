@@ -1,0 +1,13 @@
+Market Takip Sistemi
+Nurdan Özden
+No: 230401097
+
+
+Hocam Merhaba, projede PostgreSQL veritabanı kullanılmıştır.
+Projenin bilgisayarınızda çalışabilmesi için gerekli olan tüm tablo şemaları ve veritabanı kurulum kodları
+klasör içerisindeki 'market_yedek.sql' dosyasında yer almaktadır. 
+
+AppDbContext.cs dosyası içerisindeki UseNpgsql bağlantı şifresi yerel olarak 140104 ayarlanmıştır.
+Projeyi kendi bilgisayarınızda çalıştırırken bu şifreyi kendi PostgreSQL şifrenizle değiştirmeniz gerekebilir.
+
+İyi çalışmalar 😊

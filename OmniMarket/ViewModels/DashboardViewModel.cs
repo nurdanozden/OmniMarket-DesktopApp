@@ -81,7 +81,7 @@ public class DashboardViewModel : BaseViewModel
         NavigateToExpiringCommand    = new RelayCommand(() => NavigateRequested?.Invoke("expiring"));
         NavigateToExpiredCommand     = new RelayCommand(() => NavigateRequested?.Invoke("expired"));
         NavigateToStockValueCommand  = new RelayCommand(() => NavigateRequested?.Invoke("stockvalue"));
-        RefreshCommand               = new RelayCommand(ExecuteRefresh);
+        RefreshCommand               = new RelayCommand(LoadData);
 
         ApplyCampaignCommand = new RelayCommand(ExecuteApplyCampaign);
         CreateReturnCommand  = new RelayCommand(ExecuteCreateReturn);
@@ -102,24 +102,15 @@ public class DashboardViewModel : BaseViewModel
         ExpiredProducts  = expired;
         TotalStockValue  = stockValue;
 
-        var dbAlerts = _productService.GetAlerts(_marketId);
-        var alertItems = dbAlerts.Select(a => new AlertItem { Message = a.Message, Type = a.Type }).ToList();
-        
-        if (!alertItems.Any())
+        Alerts = new ObservableCollection<AlertItem>
         {
-            alertItems.Add(new AlertItem { Message = "Her şey yolunda! Sistemde kritik bir durum görünmüyor.", Type = "Info" });
-        }
-
-        Alerts = new ObservableCollection<AlertItem>(alertItems);
+            new() { Message = "DİKKAT: 'Sütaş Yoğurt 2kg' ürününün 5 adedinin SKT'sine sadece 2 gün kaldı! Kampanya başlatılabilir.", Type = "Warning" },
+            new() { Message = "STOK KRİTİK: 'Çaykur Rize Turist Çay 500g' stokta sadece 2 adet kaldı. Tedarikçiye sipariş geçilmeli.", Type = "LowStock" },
+            new() { Message = "BİLGİ: Haftalık satış analizine göre 'Dondurma' satışları %20 arttı, stokları kontrol et.", Type = "Info" }
+        };
 
         LoadTopExpiredProducts();
         LoadTopSoldProducts();
-    }
-
-    private void ExecuteRefresh()
-    {
-        LoadData();
-        MessageBox.Show("Dashboard verileri en güncel haliyle veritabanından çekildi.", "Yenilendi", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void ExecuteApplyCampaign()
