@@ -136,19 +136,19 @@ public class ProductService
 
 
 
-    public void DeleteProduct(int productId, string kullaniciAdi)
+    public void DeleteProductByName(string productName, int marketId, string kullaniciAdi)
     {
         try
         {
             using var db = new AppDbContext();
-            var product = db.Products.Find(productId);
-            if (product != null)
+            var productsToDelete = db.Products.Where(p => p.MarketId == marketId && p.Name == productName).ToList();
+            if (productsToDelete.Any())
             {
-                db.Products.Remove(product);
+                db.Products.RemoveRange(productsToDelete);
                 db.SaveChanges();
 
                 var logService = new LogService();
-                logService.AddLog(product.MarketId, kullaniciAdi, LogType.Silme, $"'{product.Name}' adlı ürün sistemden tamamen silindi.");
+                logService.AddLog(marketId, kullaniciAdi, LogType.Silme, $"'{productName}' adlı ürün tüm stoklarıyla sistemden tamamen silindi.");
             }
         }
         catch (Exception ex)

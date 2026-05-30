@@ -303,11 +303,11 @@ public class ProductListViewModel : BaseViewModel
     private void ExecuteDelete()
     {
         var selectedItems = Products.Where(p => p.IsSelected).ToList();
-        
+
         if (selectedItems.Any())
         {
             var result = MessageBox.Show(
-                $"{selectedItems.Count} adet ürünü silmek istediğinize emin misiniz?",
+                $"Seçilen {selectedItems.Count} adet ürünü (tüm stok kayıtlarıyla birlikte) silmek istediğinize emin misiniz?",
                 "Silme Onayı",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
@@ -316,7 +316,7 @@ public class ProductListViewModel : BaseViewModel
             {
                 foreach(var item in selectedItems)
                 {
-                    _productService.DeleteProduct(item.Id, _marketName);
+                    _productService.DeleteProductByName(item.Name, _marketId, _marketName);
                 }
                 LoadProducts();
             }
@@ -331,14 +331,14 @@ public class ProductListViewModel : BaseViewModel
         }
 
         var singleResult = MessageBox.Show(
-            $"\"{SelectedProduct.Name}\" ürününü silmek istediğinize emin misiniz?",
+            $"\"{SelectedProduct.Name}\" ürününü (tüm stok kayıtlarıyla birlikte) silmek istediğinize emin misiniz?",
             "Silme Onayı",
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
 
         if (singleResult == MessageBoxResult.Yes)
         {
-            _productService.DeleteProduct(SelectedProduct.Id, _marketName);
+            _productService.DeleteProductByName(SelectedProduct.Name, _marketId, _marketName);
             LoadProducts();
         }
     }
