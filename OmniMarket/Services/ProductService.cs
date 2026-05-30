@@ -170,7 +170,8 @@ public class ProductService
     public (int TotalProducts, int ExpiringProducts, int ExpiredProducts, decimal TotalStockValue) GetDashboardStats(int marketId)
     {
         using var db = new AppDbContext();
-        var products = db.Products.Where(p => p.MarketId == marketId).ToList();
+        var rawProducts = db.Products.Where(p => p.MarketId == marketId).ToList();
+        var products = GroupProducts(rawProducts);
 
         var total = products.Count;
         var expired = products.Count(p => DateTime.Today > p.ExpiryDate);
@@ -196,7 +197,7 @@ public class ProductService
             p.DiscountRate = discountRate;
 
         db.SaveChanges();
-        return expiring.Count;
+        return expiring.Select(p => p.Name).Distinct().Count();
     }
 
 
@@ -215,7 +216,7 @@ public class ProductService
             p.ReturnRequested = true;
 
         db.SaveChanges();
-        return expiring.Count;
+        return expiring.Select(p => p.Name).Distinct().Count();
     }
 
 
@@ -223,7 +224,8 @@ public class ProductService
     public List<(string Message, string Type)> GetAlerts(int marketId)
     {
         using var db = new AppDbContext();
-        var products = db.Products.Where(p => p.MarketId == marketId).ToList();
+        var rawProducts = db.Products.Where(p => p.MarketId == marketId).ToList();
+        var products = GroupProducts(rawProducts);
         var alerts = new List<(string, string)>();
 
         foreach (var p in products)
