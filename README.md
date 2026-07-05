@@ -52,7 +52,7 @@ Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları i
 ![Dashboard](images/dashboard.png) 
 ![Products](images/product.png)
 ![Suppliers](images/supplier.png)
-![Process](images/islem_gecmisi)
+![Process](images/islem_gecmisi.png)
 
 ---
 
